@@ -253,7 +253,6 @@ packages/shared/src/api/types.ts
 
 # Caches
 .cache/
-~/.cache/kiki-cockpit/
 
 # Local dev
 .env
