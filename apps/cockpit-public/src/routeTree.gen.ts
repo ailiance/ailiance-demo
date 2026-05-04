@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ModelsIndexRouteImport } from './routes/models.index'
 import { Route as ModelsOwnerNameRouteImport } from './routes/models.$owner.$name'
 import { Route as ChatOwnerNameRouteImport } from './routes/chat.$owner.$name'
 
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const ChatOwnerNameRoute = ChatOwnerNameRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/models/': typeof ModelsIndexRoute
   '/chat/$owner/$name': typeof ChatOwnerNameRoute
   '/models/$owner/$name': typeof ModelsOwnerNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/models': typeof ModelsIndexRoute
   '/chat/$owner/$name': typeof ChatOwnerNameRoute
   '/models/$owner/$name': typeof ModelsOwnerNameRoute
@@ -50,18 +58,25 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/models/': typeof ModelsIndexRoute
   '/chat/$owner/$name': typeof ChatOwnerNameRoute
   '/models/$owner/$name': typeof ModelsOwnerNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/models/' | '/chat/$owner/$name' | '/models/$owner/$name'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/models/'
+    | '/chat/$owner/$name'
+    | '/models/$owner/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/models' | '/chat/$owner/$name' | '/models/$owner/$name'
+  to: '/' | '/about' | '/models' | '/chat/$owner/$name' | '/models/$owner/$name'
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/models/'
     | '/chat/$owner/$name'
     | '/models/$owner/$name'
@@ -69,6 +84,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   ModelsIndexRoute: typeof ModelsIndexRoute
   ChatOwnerNameRoute: typeof ChatOwnerNameRoute
   ModelsOwnerNameRoute: typeof ModelsOwnerNameRoute
@@ -76,6 +92,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -109,6 +132,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   ModelsIndexRoute: ModelsIndexRoute,
   ChatOwnerNameRoute: ChatOwnerNameRoute,
   ModelsOwnerNameRoute: ModelsOwnerNameRoute,
