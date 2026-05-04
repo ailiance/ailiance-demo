@@ -1,0 +1,10 @@
+{
+  "model_id": "clemsail/micro-kiki-v3",
+  "benchmark": "HumanEval+",
+  "metric": "pass@1",
+  "score": 0.78,
+  "timestamp": "2026-04-30T12:00:00Z",
+  "run_sha": "abc123",
+  "hardware": "M3 Ultra 512G",
+  "config": {"seed": 42, "temperature": 0.0}
+}

@@ -1,0 +1,10 @@
+{
+  "model_id": "clemsail/micro-kiki-v3",
+  "benchmark": "GSM8K",
+  "metric": "accuracy",
+  "score": 0.62,
+  "timestamp": "2026-04-30T13:00:00Z",
+  "run_sha": "abc123",
+  "hardware": "M3 Ultra 512G",
+  "config": {"seed": 42, "shots": 5}
+}
