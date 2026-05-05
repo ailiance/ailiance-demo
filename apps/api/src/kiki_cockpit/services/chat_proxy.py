@@ -12,9 +12,14 @@ log = structlog.get_logger()
 # Single source of truth: model_id alias -> gateway model name.
 # `EU_KIKI_ALIASES` derives from the keys so adding a model only requires one edit.
 ALIAS_TO_GATEWAY_MODEL: dict[str, str] = {
-    "eu-kiki/apertus-70b": "apertus-70b",
-    "eu-kiki/devstral-24b": "devstral-24b",
-    "eu-kiki/eurollm-22b": "eurollm-22b",
+    # Right-hand side must match the keys in eu-kiki/src/gateway/server.py
+    # MODEL_FORCE_MAP. Sending a name that's NOT in MODEL_FORCE_MAP makes the
+    # gateway fall through to its domain router, which produced garbled output
+    # in tests because the request reaches a worker that doesn't recognize the
+    # model id and degenerates.
+    "eu-kiki/apertus-70b": "eu-kiki-apertus",
+    "eu-kiki/devstral-24b": "eu-kiki-devstral",
+    "eu-kiki/eurollm-22b": "eu-kiki-eurollm",
 }
 EU_KIKI_ALIASES: frozenset[str] = frozenset(ALIAS_TO_GATEWAY_MODEL)
 
