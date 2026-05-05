@@ -1,28 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  This is a LaunchDaemon (system-wide) — works on headless Macs (no GUI session
-  needed). Runs as user `clems` by default. Install over SSH with sudo:
+  LaunchDaemon for headless macOS — installs over SSH with sudo.
 
-    sudo cp deploy/collector/cc.kiki.collector.plist /Library/LaunchDaemons/
+  IMPORTANT: code MUST live OUTSIDE ~/Documents — modern macOS TCC blocks
+  daemons from user data directories ("Current directory does not exist" in
+  the log) even when the daemon runs as that user. We use /opt/kiki-collector/.
+
+  One-time setup on studio:
+    sudo mkdir -p /opt/kiki-collector
+    sudo chown clems:staff /opt/kiki-collector
+    rsync -az ~/Documents/Projets/kiki-cockpit/deploy/collector/ /opt/kiki-collector/
+    cd /opt/kiki-collector && ~/.local/bin/uv sync
+
+    sudo cp /opt/kiki-collector/cc.kiki.collector.plist /Library/LaunchDaemons/
     sudo chown root:wheel /Library/LaunchDaemons/cc.kiki.collector.plist
-    sudo chmod 644 /Library/LaunchDaemons/cc.kiki.collector.plist
+    sudo chmod 644       /Library/LaunchDaemons/cc.kiki.collector.plist
+    sudo launchctl bootout   system/cc.kiki.collector 2>/dev/null
     sudo launchctl bootstrap system /Library/LaunchDaemons/cc.kiki.collector.plist
-    sudo launchctl kickstart -k system/cc.kiki.collector
 
   Verify:
     curl http://localhost:9150/healthz
-    curl http://studio:9150/healthz   # from another tailnet member
+    curl http://studio:9150/healthz       # from another tailnet member
+    tail -f ~/Library/Logs/kiki-collector.log
 
-  Logs:
-    tail -f /Users/clems/Library/Logs/kiki-collector.log
-
-  Reload after editing:
-    sudo launchctl bootout system/cc.kiki.collector
+  Reload after editing the plist:
+    sudo cp /opt/kiki-collector/cc.kiki.collector.plist /Library/LaunchDaemons/
+    sudo launchctl bootout   system/cc.kiki.collector
     sudo launchctl bootstrap system /Library/LaunchDaemons/cc.kiki.collector.plist
-
-  If you have a GUI session on the host (auto-login, screen-sharing, console),
-  you can also use the LaunchAgent variant via `gui/$(id -u)` — but on a
-  headless box this LaunchDaemon is the only option.
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -35,7 +39,7 @@
         <string>/Users/clems/.local/bin/uv</string>
         <string>run</string>
         <string>--directory</string>
-        <string>/Users/clems/Documents/Projets/kiki-cockpit/deploy/collector</string>
+        <string>/opt/kiki-collector</string>
         <string>uvicorn</string>
         <string>kiki_collector.main:app</string>
         <string>--host</string>
@@ -50,7 +54,7 @@
     <string>staff</string>
 
     <key>WorkingDirectory</key>
-    <string>/Users/clems/Documents/Projets/kiki-cockpit/deploy/collector</string>
+    <string>/opt/kiki-collector</string>
 
     <key>EnvironmentVariables</key>
     <dict>

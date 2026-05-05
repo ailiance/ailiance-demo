@@ -70,28 +70,39 @@ names (`studio`, `macm1`, `tower`) resolve through the host's resolver.
 The shipped plist is a **LaunchDaemon** — works on headless Macs (no GUI
 session) and bootstraps over SSH with sudo.
 
-Step 1 — over SSH (clone, deps):
+⚠️ **macOS TCC**: the collector must live **outside `~/Documents`**. Modern
+macOS blocks daemons from user data directories even when running as that
+user — the daemon stays in `spawn scheduled` state with `last exit code = 1`
+and no log file is ever written. We install the code to `/opt/kiki-collector/`.
+
+Step 1 — clone + install deps under HOME (still useful as a working tree):
 ```bash
 ssh studio
 cd ~/Documents/Projets
 git clone https://github.com/L-electron-Rare/kiki-cockpit.git    # or rsync from another host
 cd kiki-cockpit/deploy/collector
-~/.local/bin/uv sync                                              # installs deps in .venv
+~/.local/bin/uv sync                                              # creates .venv
 ```
 
-Step 2 — install daemon (sudo password required once):
+Step 2 — relocate to `/opt/kiki-collector/` and bootstrap (one sudo prompt):
 ```bash
-sudo cp ~/Documents/Projets/kiki-cockpit/deploy/collector/cc.kiki.collector.plist \
-  /Library/LaunchDaemons/
+sudo mkdir -p /opt/kiki-collector
+sudo chown clems:staff /opt/kiki-collector
+rsync -az ~/Documents/Projets/kiki-cockpit/deploy/collector/ /opt/kiki-collector/
+cd /opt/kiki-collector && ~/.local/bin/uv sync
+
+sudo cp /opt/kiki-collector/cc.kiki.collector.plist /Library/LaunchDaemons/
 sudo chown root:wheel /Library/LaunchDaemons/cc.kiki.collector.plist
 sudo chmod 644       /Library/LaunchDaemons/cc.kiki.collector.plist
+sudo launchctl bootout   system/cc.kiki.collector 2>/dev/null
 sudo launchctl bootstrap system /Library/LaunchDaemons/cc.kiki.collector.plist
-sudo launchctl kickstart -k system/cc.kiki.collector
+
 curl http://localhost:9150/healthz       # → {"status":"ok","machine":"studio"}
 ```
 
-The daemon runs as user `clems` (set via `UserName` in the plist) so logs paths
-under `/Users/clems/...` remain readable. Logs go to `/var/log/kiki-collector.log`.
+The daemon runs as user `clems` (set via `UserName` in the plist) so HOME-owned
+paths stay readable. Logs go to `~/Library/Logs/kiki-collector.log`
+(daemon-writable; `/var/log/` is not writable for non-root daemons).
 
 Until step 2 is done, you can run the collector transiently over SSH:
 ```bash
