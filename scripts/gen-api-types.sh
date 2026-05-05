@@ -21,9 +21,12 @@ for i in {1..30}; do
   sleep 0.5
 done
 
-# Fetch OpenAPI and convert. The `-` argument tells openapi-typescript to read
-# the schema from stdin; without it v7+ may treat the missing positional as an
-# error and produce no output (silent CI failure).
-curl -fsS http://127.0.0.1:9199/openapi.json | pnpm exec openapi-typescript - --output "$OUT"
+# Fetch OpenAPI and convert. openapi-typescript v7.4.x lstat()s its positional
+# argument before checking for stdin, so passing `-` raises ENOENT inside
+# Docker. Write to a temp file instead — works in every environment.
+TMP_SCHEMA="$(mktemp -t openapi.XXXXXX.json)"
+trap 'kill $API_PID 2>/dev/null || true; rm -f "$TMP_SCHEMA"' EXIT
+curl -fsS http://127.0.0.1:9199/openapi.json -o "$TMP_SCHEMA"
+pnpm exec openapi-typescript "$TMP_SCHEMA" --output "$OUT"
 
 echo "✓ Generated $OUT"
