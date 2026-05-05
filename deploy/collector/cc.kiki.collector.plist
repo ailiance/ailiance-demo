@@ -1,22 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Install on studio (Mac M3 Ultra) — MUST be run from a GUI Terminal session,
-  NOT over SSH (modern macOS blocks `launchctl bootstrap` from SSH context):
+  This is a LaunchDaemon (system-wide) — works on headless Macs (no GUI session
+  needed). Runs as user `clems` by default. Install over SSH with sudo:
 
-    cp deploy/collector/cc.kiki.collector.plist ~/Library/LaunchAgents/
-    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/cc.kiki.collector.plist
-    launchctl kickstart -k gui/$(id -u)/cc.kiki.collector
+    sudo cp deploy/collector/cc.kiki.collector.plist /Library/LaunchDaemons/
+    sudo chown root:wheel /Library/LaunchDaemons/cc.kiki.collector.plist
+    sudo chmod 644 /Library/LaunchDaemons/cc.kiki.collector.plist
+    sudo launchctl bootstrap system /Library/LaunchDaemons/cc.kiki.collector.plist
+    sudo launchctl kickstart -k system/cc.kiki.collector
 
   Verify:
     curl http://localhost:9150/healthz
     curl http://studio:9150/healthz   # from another tailnet member
 
   Logs:
-    tail -f ~/Library/Logs/kiki-collector.log
+    tail -f /var/log/kiki-collector.log
 
   Reload after editing:
-    launchctl bootout gui/$(id -u)/cc.kiki.collector
-    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/cc.kiki.collector.plist
+    sudo launchctl bootout system/cc.kiki.collector
+    sudo launchctl bootstrap system /Library/LaunchDaemons/cc.kiki.collector.plist
+
+  If you have a GUI session on the host (auto-login, screen-sharing, console),
+  you can also use the LaunchAgent variant via `gui/$(id -u)` — but on a
+  headless box this LaunchDaemon is the only option.
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -38,10 +44,20 @@
         <string>9150</string>
     </array>
 
+    <key>UserName</key>
+    <string>clems</string>
+    <key>GroupName</key>
+    <string>staff</string>
+
+    <key>WorkingDirectory</key>
+    <string>/Users/clems/Documents/Projets/kiki-cockpit/deploy/collector</string>
+
     <key>EnvironmentVariables</key>
     <dict>
         <key>COLLECTOR_MACHINE_LABEL</key>
         <string>studio</string>
+        <key>HOME</key>
+        <string>/Users/clems</string>
         <key>PATH</key>
         <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
     </dict>
@@ -52,9 +68,9 @@
     <true/>
 
     <key>StandardOutPath</key>
-    <string>/Users/clems/Library/Logs/kiki-collector.log</string>
+    <string>/var/log/kiki-collector.log</string>
     <key>StandardErrorPath</key>
-    <string>/Users/clems/Library/Logs/kiki-collector.log</string>
+    <string>/var/log/kiki-collector.log</string>
 
     <key>ProcessType</key>
     <string>Background</string>

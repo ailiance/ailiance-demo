@@ -67,26 +67,31 @@ names (`studio`, `macm1`, `tower`) resolve through the host's resolver.
 
 ## Collector on studio
 
-Native launchd (preferred — needs HOME read access to logs).
-**Bootstrap MUST be run from a Terminal app on the host, not over SSH** —
-modern macOS rejects `launchctl bootstrap` outside an interactive GUI domain.
+The shipped plist is a **LaunchDaemon** — works on headless Macs (no GUI
+session) and bootstraps over SSH with sudo.
 
-Step 1 — over SSH (clone, deps, copy plist):
+Step 1 — over SSH (clone, deps):
 ```bash
 ssh studio
 cd ~/Documents/Projets
 git clone https://github.com/L-electron-Rare/kiki-cockpit.git    # or rsync from another host
 cd kiki-cockpit/deploy/collector
 ~/.local/bin/uv sync                                              # installs deps in .venv
-cp cc.kiki.collector.plist ~/Library/LaunchAgents/
 ```
 
-Step 2 — locally on studio (open Terminal.app, NOT remote SSH):
+Step 2 — install daemon (sudo password required once):
 ```bash
-launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/cc.kiki.collector.plist
-launchctl kickstart -k gui/$(id -u)/cc.kiki.collector
+sudo cp ~/Documents/Projets/kiki-cockpit/deploy/collector/cc.kiki.collector.plist \
+  /Library/LaunchDaemons/
+sudo chown root:wheel /Library/LaunchDaemons/cc.kiki.collector.plist
+sudo chmod 644       /Library/LaunchDaemons/cc.kiki.collector.plist
+sudo launchctl bootstrap system /Library/LaunchDaemons/cc.kiki.collector.plist
+sudo launchctl kickstart -k system/cc.kiki.collector
 curl http://localhost:9150/healthz       # → {"status":"ok","machine":"studio"}
 ```
+
+The daemon runs as user `clems` (set via `UserName` in the plist) so logs paths
+under `/Users/clems/...` remain readable. Logs go to `/var/log/kiki-collector.log`.
 
 Until step 2 is done, you can run the collector transiently over SSH:
 ```bash
