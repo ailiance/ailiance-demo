@@ -29,7 +29,10 @@ export function ModelCard({ card }: Props) {
           <h3 className="font-bold text-lg truncate">{card.display_name}</h3>
           <p className="text-xs text-slate-500 truncate">{card.id}</p>
         </div>
-        <StatusBadge status={card.status} />
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <StatusBadge status={card.status} />
+          {card.kind && card.kind !== 'unknown' && <KindBadge kind={card.kind} />}
+        </div>
       </header>
 
       {card.featured_headline && (
@@ -122,6 +125,31 @@ function StatusBadge({ status }: { status: string }) {
   return (
     <span className={`text-xs rounded-full px-2 py-0.5 shrink-0 ${colors[status] ?? colors.production}`}>
       {status}
+    </span>
+  );
+}
+
+function KindBadge({ kind }: { kind: string }) {
+  const labels: Record<string, string> = {
+    base: 'base',
+    fine_tuned: 'fine-tune',
+    lora: 'LoRA',
+    quantized: 'quantized',
+    distilled: 'distilled',
+    merged: 'merged',
+  };
+  const colors: Record<string, string> = {
+    base: 'bg-sky-100 text-sky-800',
+    fine_tuned: 'bg-indigo-100 text-indigo-800',
+    lora: 'bg-violet-100 text-violet-800',
+    quantized: 'bg-cyan-100 text-cyan-800',
+    distilled: 'bg-fuchsia-100 text-fuchsia-800',
+    merged: 'bg-orange-100 text-orange-800',
+  };
+  if (!labels[kind]) return null;
+  return (
+    <span className={`text-[10px] rounded-full px-2 py-0.5 shrink-0 font-medium ${colors[kind]}`}>
+      {labels[kind]}
     </span>
   );
 }

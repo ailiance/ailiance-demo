@@ -1,5 +1,11 @@
 from kiki_cockpit.models.eval_result import EvalResult, EvalSummary
-from kiki_cockpit.models.model_card import ChatBackend, ModelCard, ModelDetail, ModelStatus
+from kiki_cockpit.models.model_card import (
+    ChatBackend,
+    ModelCard,
+    ModelDetail,
+    ModelKind,
+    ModelStatus,
+)
 from kiki_cockpit.models.training_run import (
     TrainingMetric,
     TrainingRun,
@@ -14,6 +20,7 @@ __all__ = [
     "EvalSummary",
     "ModelCard",
     "ModelDetail",
+    "ModelKind",
     "ModelStatus",
     "TrainingMetric",
     "TrainingRun",

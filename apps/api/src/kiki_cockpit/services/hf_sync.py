@@ -7,7 +7,7 @@ from datetime import datetime
 import structlog
 import httpx
 
-from kiki_cockpit.models import ChatBackend, ModelCard, ModelStatus
+from kiki_cockpit.models import ChatBackend, ModelCard, ModelKind, ModelStatus
 
 log = structlog.get_logger()
 
@@ -163,11 +163,39 @@ def to_model_card(raw: dict, eu_kiki_aliases: set[str]) -> ModelCard:
     base_model = card_data.get("base_model")
     if isinstance(base_model, list):
         base_model = base_model[0] if base_model else None
+    is_lora_adapter = False
     if not base_model:
         for t in tags:
-            if isinstance(t, str) and t.startswith("base_model:") and ":adapter" not in t:
-                base_model = t.split(":", 1)[1]
+            if isinstance(t, str) and t.startswith("base_model:"):
+                if ":adapter:" in t:
+                    is_lora_adapter = True
+                    base_model = t.split(":adapter:", 1)[1]
+                    break
+                if not base_model:
+                    base_model = t.split(":", 1)[1]
+    else:
+        # base_model present in cardData → check tags for adapter signal too.
+        for t in tags:
+            if isinstance(t, str) and ":adapter:" in t:
+                is_lora_adapter = True
                 break
+
+    # Provenance / training kind. Order of precedence: explicit lora/peft tag,
+    # adapter base_model tag, gguf-only quantisation, fine-tune (has base),
+    # else base.
+    kind = ModelKind.UNKNOWN
+    if is_lora_adapter or "lora" in tag_set or "peft" in tag_set or "adapter" in tag_set:
+        kind = ModelKind.LORA
+    elif "merged" in tag_set or "merge" in tag_set:
+        kind = ModelKind.MERGED
+    elif "distilled" in tag_set or "distillation" in tag_set:
+        kind = ModelKind.DISTILLED
+    elif "gguf" in tag_set and base_model:
+        kind = ModelKind.QUANTIZED
+    elif base_model:
+        kind = ModelKind.FINE_TUNED
+    elif sf or "safetensors" in tag_set or architecture in {"safetensors"}:
+        kind = ModelKind.BASE
 
     return ModelCard(
         id=model_id,
@@ -186,4 +214,5 @@ def to_model_card(raw: dict, eu_kiki_aliases: set[str]) -> ModelCard:
         architecture=architecture,
         license=license_str,
         base_model=base_model,
+        kind=kind,
     )

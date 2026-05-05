@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 
 from kiki_cockpit.deps import get_hf_cache
 from kiki_cockpit.models import ModelCard
-from kiki_cockpit.models.model_card import ChatBackend, ModelStatus
+from kiki_cockpit.models.model_card import ChatBackend, ModelKind, ModelStatus
 from kiki_cockpit.services.chat_proxy import ALIAS_TO_GATEWAY_MODEL
 from kiki_cockpit.services.hf_cache import HFCache
 
@@ -38,6 +38,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "host": "studio (Mac Studio M3 Ultra)",
         "architecture": "mlx",
         "license": "apache-2.0",
+        "kind": ModelKind.QUANTIZED,
     },
     "eu-kiki/devstral-24b": {
         "display_name": "Devstral 24B",
@@ -55,6 +56,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "host": "macm1 (Mac mini M1)",
         "architecture": "mlx",
         "license": "apache-2.0",
+        "kind": ModelKind.QUANTIZED,
     },
     "eu-kiki/eurollm-22b": {
         "display_name": "EuroLLM 22B",
@@ -72,6 +74,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "host": "studio (Mac Studio M3 Ultra)",
         "architecture": "mlx",
         "license": "apache-2.0",
+        "kind": ModelKind.QUANTIZED,
     },
     "eu-kiki/qwen-35b-a3b": {
         "display_name": "Qwen3.5 35B A3B",
@@ -89,6 +92,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "host": "kxkm-ai (RTX 4090 via SSH tunnel)",
         "architecture": "gguf",
         "license": "apache-2.0",
+        "kind": ModelKind.QUANTIZED,
     },
     "eu-kiki/auto": {
         "display_name": "Auto-router",
@@ -107,6 +111,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "host": "electron-server (gateway-side, CPU)",
         "architecture": "safetensors",
         "license": "apache-2.0",
+        "kind": ModelKind.FINE_TUNED,
     },
 }
 
@@ -138,6 +143,7 @@ def _live_cards() -> list[ModelCard]:
                 host=details.get("host"),
                 architecture=details.get("architecture"),
                 license=details.get("license"),
+                kind=details.get("kind", ModelKind.UNKNOWN),
             )
         )
     return cards

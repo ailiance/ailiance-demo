@@ -19,6 +19,26 @@ class ChatBackend(str, Enum):
     NOT_AVAILABLE = "not_available"
 
 
+class ModelKind(str, Enum):
+    """Training provenance of the model.
+
+    base       — original foundation model trained from scratch (or imported
+                 unchanged from upstream).
+    fine_tuned — full fine-tune (all weights updated) of an upstream base.
+    lora       — LoRA / PEFT adapter on top of a base; weights = adapter only.
+    quantized  — re-quantisation of an upstream model (no training).
+    distilled  — distillation of a larger teacher.
+    merged     — weight-merge of two or more checkpoints.
+    """
+    BASE = "base"
+    FINE_TUNED = "fine_tuned"
+    LORA = "lora"
+    QUANTIZED = "quantized"
+    DISTILLED = "distilled"
+    MERGED = "merged"
+    UNKNOWN = "unknown"
+
+
 class DatasetRef(BaseModel):
     hf_dataset_id: str
     license: str | None = None
@@ -57,6 +77,7 @@ class ModelCard(BaseModel):
     host: str | None = None
     architecture: str | None = None
     license: str | None = None
+    kind: ModelKind = ModelKind.UNKNOWN
 
 
 class ModelDetail(ModelCard):
