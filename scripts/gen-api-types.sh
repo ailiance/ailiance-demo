@@ -15,10 +15,18 @@ uv run uvicorn kiki_cockpit.main:app --host 127.0.0.1 --port 9199 &
 API_PID=$!
 trap 'kill $API_PID 2>/dev/null || true' EXIT
 
-# Wait for it to be up
-for i in {1..30}; do
-  if curl -fsS http://127.0.0.1:9199/api/public/healthz > /dev/null 2>&1; then break; fi
-  sleep 0.5
+# Wait for it to be up. Lifespan does HF API fetches (~10s for 30 models) so
+# we need a generous timeout — 60s × 1s = 60s ceiling.
+for i in {1..60}; do
+  if curl -fsS http://127.0.0.1:9199/api/public/healthz > /dev/null 2>&1; then
+    echo "API ready after ${i}s"
+    break
+  fi
+  if [ $i -eq 60 ]; then
+    echo "API failed to become ready in 60s — aborting" >&2
+    exit 1
+  fi
+  sleep 1
 done
 
 # Fetch OpenAPI and convert. openapi-typescript v7.4.x lstat()s its positional
