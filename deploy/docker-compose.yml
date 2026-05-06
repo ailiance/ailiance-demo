@@ -66,6 +66,13 @@ services:
       - "traefik.http.routers.kiki-api-admin.entrypoints=websecure"
       - "traefik.http.routers.kiki-api-admin.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
       - "traefik.http.routers.kiki-api-admin.service=kiki-api"
+      # Rate-limit: 30 requests / minute / source IP, burst 10
+      - "traefik.http.middlewares.kiki-api-ratelimit.ratelimit.average=30"
+      - "traefik.http.middlewares.kiki-api-ratelimit.ratelimit.period=1m"
+      - "traefik.http.middlewares.kiki-api-ratelimit.ratelimit.burst=10"
+      - "traefik.http.middlewares.kiki-api-ratelimit.ratelimit.sourceCriterion.ipStrategy.depth=1"
+      - "traefik.http.routers.kiki-api-public.middlewares=kiki-api-ratelimit"
+      - "traefik.http.routers.kiki-api-admin.middlewares=kiki-api-ratelimit"
 
   public:
     <<: [*restart, *logging]
