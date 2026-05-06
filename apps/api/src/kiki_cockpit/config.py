@@ -41,10 +41,12 @@ class Settings(BaseSettings):
     machine_label: str = "studio"
     workers_to_check: list[dict] = Field(
         default_factory=lambda: [
-            {"name": "gateway", "url": "http://localhost:9200/health"},
-            {"name": "apertus", "url": "http://localhost:9301/health"},
-            {"name": "devstral", "url": "http://localhost:9302/health"},
-            {"name": "eurollm", "url": "http://localhost:9303/health"},
+            {"name": "gateway", "url": "http://host.docker.internal:9300/health"},
+            {"name": "apertus", "url": "http://studio:9301/health"},
+            {"name": "devstral", "url": "http://macm1:9302/health"},
+            {"name": "eurollm", "url": "http://studio:9303/health"},
+            {"name": "gemma3", "url": "http://tower:9304/health"},
+            {"name": "qwen3-next", "url": "http://host.docker.internal:8002/health"},
         ],
     )
 
