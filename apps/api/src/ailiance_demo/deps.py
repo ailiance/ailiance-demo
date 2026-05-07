@@ -35,3 +35,14 @@ def get_training_runs_provider(request: Request):
 @lru_cache(maxsize=1)
 def get_datasets_service() -> DatasetsService:
     return DatasetsService(roots=settings.datasets_root)
+
+
+from ailiance_demo.services.training_launcher import (
+    SSHScreenDispatcher,
+    TrainingLauncher,
+)
+
+
+@lru_cache(maxsize=1)
+def get_training_launcher() -> TrainingLauncher:
+    return TrainingLauncher(dispatcher=SSHScreenDispatcher())

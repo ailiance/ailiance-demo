@@ -1,10 +1,17 @@
 """Admin training runs endpoints."""
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel
 
 from ailiance_demo.auth.tailscale import require_tailscale_user
-from ailiance_demo.deps import get_training_runs_provider
+from ailiance_demo.deps import get_training_launcher, get_training_runs_provider
 from ailiance_demo.models import TrainingMetric, TrainingRun, TrainingRunDetail
+from ailiance_demo.services.training_launcher import (
+    LaunchInfo,
+    LaunchRequest,
+    TrainingLauncher,
+    UnknownModelError,
+)
 
 router = APIRouter(
     prefix="/api/admin",
@@ -56,3 +63,20 @@ async def stream_training_logs(
         provider.tail_log_sse(run_id, disconnect_probe=request),
         media_type="text/event-stream",
     )
+
+
+class LaunchResponse(BaseModel):
+    run_id: str
+    host: str
+
+
+@router.post("/training/launch", response_model=LaunchResponse)
+def launch_training(
+    req: LaunchRequest,
+    launcher: TrainingLauncher = Depends(get_training_launcher),
+) -> LaunchResponse:
+    try:
+        info: LaunchInfo = launcher.launch(req)
+    except UnknownModelError as exc:
+        raise HTTPException(status_code=400, detail=f"Unknown base_model: {exc}") from exc
+    return LaunchResponse(run_id=info.run_id, host=info.host)
