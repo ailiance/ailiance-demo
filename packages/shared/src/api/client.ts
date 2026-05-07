@@ -56,5 +56,9 @@ export function createApiClient(options: ApiClientOptions) {
       body: unknown,
       init?: { headers?: Record<string, string>; signal?: AbortSignal },
     ) => request<T>('POST', path, { ...init, body }),
+    delete: <T>(
+      path: string,
+      init?: { headers?: Record<string, string>; signal?: AbortSignal },
+    ) => request<T>('DELETE', path, init),
   };
 }
