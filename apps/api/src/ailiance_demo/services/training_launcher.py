@@ -113,3 +113,47 @@ class TrainingLauncher:
         if base_model not in self.host_for_model:
             raise UnknownModelError(base_model)
         return self.host_for_model[base_model]
+
+
+import subprocess
+import tempfile
+from pathlib import Path
+
+
+class SSHScreenDispatcher:
+    """Dispatcher that scps the YAML to the target host and starts a screen session.
+
+    Requires the api container to have an SSH key with passwordless access to
+    the training hosts (mounted at /root/.ssh/id_ed25519, see compose).
+    """
+
+    def __init__(self, ssh_user: str = "electron") -> None:
+        self.ssh_user = ssh_user
+        self._ssh_opts = ["-o", "BatchMode=yes", "-o", "ConnectTimeout=10"]
+
+    def __call__(self, host: str, run_id: str, yaml_text: str) -> None:
+        remote_yaml = f"/tmp/cockpit-{run_id}.yaml"
+        remote_log = f"~/training-logs/{run_id}.log"
+        with tempfile.NamedTemporaryFile(suffix=".yaml", delete=False) as fh:
+            fh.write(yaml_text.encode())
+            local_path = Path(fh.name)
+        try:
+            scp = subprocess.run(
+                ["scp", *self._ssh_opts, str(local_path), f"{self.ssh_user}@{host}:{remote_yaml}"],
+                capture_output=True,
+            )
+            if scp.returncode != 0:
+                raise RuntimeError(f"scp failed: {scp.stderr.decode(errors='replace')}")
+            cmd = (
+                f"mkdir -p ~/training-logs && "
+                f"screen -dmS {run_id} bash -c "
+                f"'caffeinate -d -i mlx_lm.lora -c {remote_yaml} > {remote_log} 2>&1'"
+            )
+            ssh = subprocess.run(
+                ["ssh", *self._ssh_opts, f"{self.ssh_user}@{host}", cmd],
+                capture_output=True,
+            )
+            if ssh.returncode != 0:
+                raise RuntimeError(f"ssh failed: {ssh.stderr.decode(errors='replace')}")
+        finally:
+            local_path.unlink(missing_ok=True)
