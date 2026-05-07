@@ -32,7 +32,7 @@ ALIAS_TO_GATEWAY_MODEL: dict[str, str] = {
 # Worker port → human-readable label, used for the route preamble.
 _PORT_LABELS: dict[int, str] = {
     9301: "Mistral Medium 3.5 128B (studio)",
-    9302: "Gemma 4 E4B + ailiance curriculum LoRA (macm1)",
+    8502: "Gemma 4 E4B + ailiance curriculum LoRA (macm1)",
     9303: "EuroLLM 22B (studio)",
     9304: "Gemma 3 4B (tower)",
     8002: "Qwen3.5 35B (kxkm-ai)",
