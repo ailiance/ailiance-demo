@@ -18,7 +18,7 @@ ALIAS_TO_GATEWAY_MODEL: dict[str, str] = {
     # gateway fall through to its domain router, which produced garbled output
     # in tests because the request reaches a worker that doesn't recognize the
     # model id and degenerates.
-    "ailiance/apertus-70b": "ailiance-apertus",
+    "ailiance/mistral-medium-3.5-128b": "ailiance-mistral",
     "ailiance/devstral-24b": "ailiance-devstral",
     "ailiance/eurollm-22b": "ailiance-eurollm",
     "ailiance/gemma3-4b": "ailiance-gemma",
@@ -31,7 +31,7 @@ ALIAS_TO_GATEWAY_MODEL: dict[str, str] = {
 
 # Worker port → human-readable label, used for the route preamble.
 _PORT_LABELS: dict[int, str] = {
-    9301: "Apertus 70B (studio)",
+    9301: "Mistral Medium 3.5 128B (studio)",
     9302: "Devstral 24B (macm1)",
     9303: "EuroLLM 22B (studio)",
     9304: "Gemma 3 4B (tower)",

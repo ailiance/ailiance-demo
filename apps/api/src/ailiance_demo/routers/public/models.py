@@ -22,22 +22,26 @@ router = APIRouter(prefix="/api/public", tags=["public"])
 _GIB = 1024**3
 
 _LIVE_DETAILS: dict[str, dict] = {
-    "ailiance/apertus-70b": {
-        "display_name": "Apertus 70B",
-        "base_model": "Apertus 70B",
+    "ailiance/mistral-medium-3.5-128b": {
+        "display_name": "Mistral Medium 3.5 128B",
+        "base_model": "Mistral Medium 3.5 128B",
         "domain": "general",
         "description": (
-            "Swiss-stack 70B foundation model — fluent FR/DE/IT/EN. "
-            "Runs on Mac Studio M3 Ultra."
+            "Mistral AI flagship 128B — reasoning, code, vision, agents in a "
+            "single model (absorbs Devstral 2 + Magistral + Pixtral). "
+            "Released April 29 2026 under Modified MIT — free commercial use "
+            "for individuals, startups, mid-market, and universities; "
+            "high-revenue enterprises require Mistral's paid API. "
+            "262 k context window. Runs on Mac Studio M3 Ultra."
         ),
-        "headline": "70B params · MLX 8-bit · Mac Studio M3 Ultra",
-        "parameters": 70_000_000_000,
-        "disk_size_bytes": 70 * _GIB,
-        "memory_gb": 75.0,
-        "quantization": "MLX 8-bit",
+        "headline": "128B params · MLX Q8 · 262k context · Mac Studio M3 Ultra",
+        "parameters": 128_000_000_000,
+        "disk_size_bytes": 124 * _GIB,
+        "memory_gb": 130.0,
+        "quantization": "MLX Q8",
         "host": "studio (Mac Studio M3 Ultra)",
         "architecture": "mlx",
-        "license": "apache-2.0",
+        "license": "modified-mit",
         "kind": ModelKind.QUANTIZED,
     },
     "ailiance/devstral-24b": {

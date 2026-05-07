@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     workers_to_check: list[dict] = Field(
         default_factory=lambda: [
             {"name": "gateway", "url": "http://host.docker.internal:9300/health"},
-            {"name": "apertus", "url": "http://studio:9301/health"},
+            {"name": "mistral-medium-3.5", "url": "http://studio:9301/health"},
             {"name": "devstral", "url": "http://macm1:9302/health"},
             {"name": "eurollm", "url": "http://studio:9303/health"},
             {"name": "gemma3", "url": "http://tower:9304/health"},

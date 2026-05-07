@@ -8,9 +8,9 @@ featured:
   - id: clemsail/kiki-stm32-sft
     rank: 3
     headline: "Adapter STM32 — 79 downloads"
-  - id: ailiance/apertus-70b
+  - id: ailiance/mistral-medium-3.5-128b
     rank: 4
-    headline: "EU sovereign — Apertus 70B (EPFL+ETH+CSCS) avec 32 adapters EU"
+    headline: "Mistral Medium 3.5 128B — frontier FR, Modified MIT (libre PME/startup), 262k ctx"
   - id: ailiance/devstral-24b
     rank: 5
     headline: "Devstral 2 24B — code generation EU"
@@ -26,5 +26,6 @@ deprecated:
 aliases:
   clemsail/micro-kiki-v3: "Micro-KIKI v3"
   ailiance/apertus-70b: "Apertus 70B (AILIANCE)"
+  ailiance/mistral-medium-3.5-128b: "Mistral Medium 3.5 128B (AILIANCE)"
   ailiance/devstral-24b: "Devstral 24B (AILIANCE)"
   ailiance/eurollm-22b: "EuroLLM 22B (AILIANCE)"

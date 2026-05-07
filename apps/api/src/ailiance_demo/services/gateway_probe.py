@@ -17,7 +17,7 @@ from ailiance_demo.models.status import RouterStats, WorkerStatus
 log = structlog.get_logger()
 
 WORKERS = [
-    {"id": "apertus", "label": "Apertus 70B", "url": "http://studio:9301", "host": "studio"},
+    {"id": "mistral-medium-3.5", "label": "Mistral Medium 3.5 128B", "url": "http://studio:9301", "host": "studio"},
     {"id": "devstral", "label": "Devstral 24B", "url": "http://macm1:9302", "host": "macm1"},
     {"id": "eurollm", "label": "EuroLLM 22B", "url": "http://studio:9303", "host": "studio"},
     {"id": "gemma3", "label": "Gemma 3 4B", "url": "http://tower:9304", "host": "tower"},
