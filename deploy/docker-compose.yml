@@ -53,6 +53,7 @@ services:
       - /home/electron/training-logs:/training-logs:ro
       - /home/electron/datasets:/datasets:ro
       - /home/electron/.ssh:/root/.ssh:ro
+      - /home/electron/dataset-flags:/dataset-flags:rw
     networks:
       - traefik
       - default
