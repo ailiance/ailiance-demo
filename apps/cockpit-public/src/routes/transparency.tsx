@@ -186,6 +186,51 @@ function TransparencyPage() {
         sessions only live in volatile memory.
       </p>
 
+      <h2>Audit-grade benchmark — <code>iact-bench v0.2.0</code></h2>
+      <p>
+        Capability and reliability of every model in our catalogue is measured by{' '}
+        <a
+          href="https://github.com/electron-rare/iact-bench"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          iact-bench
+        </a>{' '}
+        — an audit-grade evaluation harness aligned with EU AI Act Article 53(1)(d) and
+        Annex XI. The matrix runs <strong>31 canonical domains × ≤ 23 GPAI-eligible models</strong>{' '}
+        with a triple metric: perplexity + task-score + LLM-judge + <strong>sandboxed
+        validators</strong>. For each cell we record:
+      </p>
+      <ul>
+        <li><code>run_id</code>, <code>git_sha</code>, <code>methodology</code> version (currently <code>v1</code>)</li>
+        <li><code>prompt_hash</code> and <code>output_hash</code> (sha256)</li>
+        <li><code>seed</code> (crc32 deterministic per cell + sample index)</li>
+        <li><code>validator_image_digest</code> — pinned sha256 of the Docker image used</li>
+        <li><code>validator_exit_code</code>, truncated stdout/stderr — for reproducible re-runs</li>
+      </ul>
+      <p>
+        Validators run inside Docker sandboxes with{' '}
+        <code>--network=none --read-only --user 1000:1000 --cap-drop=ALL</code>, which makes
+        the model output the <em>sole</em> input to the validator: no data exfiltration, no
+        environment leakage. Twelve validators are sandbox-stable today (g++, arm-none-eabi-gcc,
+        cargo embedded, shellcheck, tsc, ngspice, KiCad DRC/ERC, FreeCAD scripting, html5lib
+        strict, sqlglot, JSON/YAML); ten additional v0.3 EDA/MCAD-as-code validators (SKiDL,
+        tscircuit, Circuit-Synth, Xyce, Lcapy, CadQuery, build123d, OpenSCAD, JSCAD,
+        ImplicitCAD) ship in v0.3.0.
+      </p>
+      <p>
+        The full methodology document, audit walkthrough, and EU sovereignty charter live in{' '}
+        <a
+          href="https://github.com/electron-rare/iact-bench/blob/master/docs/methodology/2026-05-10-iact-bench-methodology-v1.md"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          docs/methodology/v1.md
+        </a>
+        . An external auditor can pull any pinned validator image by digest, replay any cell
+        trace, and verify the recorded score byte-for-byte.
+      </p>
+
       <h2>Contact &amp; right to opt out</h2>
       <p>
         Reports of biased output, copyright concerns, or any other AI Act issue: email{' '}
