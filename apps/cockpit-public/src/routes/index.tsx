@@ -92,26 +92,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Disclosure Article 50 — obligation d'information d'utilisation IA, dès l'accueil */}
-      <section className="wrap" style={{ paddingTop: 24, paddingBottom: 24 }}>
-        <div className="disclosure">
-          <div>
-            <div className="num">50</div>
-            <div className="label">Article</div>
-          </div>
-          <div>
-            <h4>Vous interagissez avec une IA.</h4>
-            <p style={{ margin: 0, color: 'var(--ink-2)', fontSize: 15 }}>
-              Chaque réponse de chat sur ce site est produite par un grand modèle de langage. Les
-              sorties peuvent être inexactes, biaisées ou fabriquées. Elles ne constituent pas un
-              avis professionnel. <strong>Ne pas agir</strong> sur une réponse sans vérification
-              indépendante — en particulier dans les domaines régulés (santé, droit, finance,
-              ingénierie critique).
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Manifeste — 4 missions */}
       <section className="wrap block">
         <div className="block-head">
@@ -276,7 +256,7 @@ function HomePage() {
               <div style={{ display: 'flex', gap: 12 }}>
                 <a
                   className="btn"
-                  href="https://github.com/ailiance/ailiance"
+                  href="https://github.com/ailiance"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

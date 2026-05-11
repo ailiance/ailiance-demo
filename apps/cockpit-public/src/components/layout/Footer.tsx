@@ -12,8 +12,9 @@ export function Footer() {
               ail<em>i</em>ance
             </div>
             <p>
-              Cinq workers. Vingt-quatre modèles. Un dossier de conformité par référence servie.
-              Hébergé en France, exploité depuis un tailnet, sans dépendance cloud.
+              Flotte LLM souveraine : plusieurs dizaines de modèles servis depuis du matériel
+              personnel en France, exposés par tailnet, avec un dossier de conformité Annex IV
+              par référence. Pas de dépendance cloud.
             </p>
           </div>
           <div>
