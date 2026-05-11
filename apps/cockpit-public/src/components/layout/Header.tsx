@@ -3,11 +3,7 @@ import { Link } from '@tanstack/react-router';
 const NAV_ITEMS: [string, string][] = [
   ['/', 'Accueil'],
   ['/models', 'Modèles'],
-  ['/catalog', 'Catalogue HF'],
-  ['/bench', 'Bench'],
-  ['/chat', 'Playground'],
-  ['/status', 'Status'],
-  ['/transparency', 'Transparence'],
+  ['/transparency', 'Démarche Qualité IA Act'],
   ['/about', 'À propos'],
 ];
 
@@ -39,11 +35,7 @@ export function Header() {
         </Link>
         <nav className="nav">
           {NAV_ITEMS.map(([path, label]) => (
-            <Link
-              key={path}
-              to={path}
-              activeProps={{ 'aria-current': 'page' }}
-            >
+            <Link key={path} to={path} activeProps={{ 'aria-current': 'page' }}>
               {label}
             </Link>
           ))}
