@@ -125,20 +125,6 @@ function ModelsPage() {
         </p>
       </section>
 
-      {/* Auto-router showcase */}
-      <section className="wrap block">
-        <div className="block-head">
-          <h2>
-            Auto-router <code className="mono">model: "ailiance"</code>.
-          </h2>
-          <p className="lede">
-            Un seul alias. Le routeur classifie 32 domaines (embeddings Jina v3 + classifier MLP),
-            applique une politique YAML par domaine, et fait passer la sortie dans un validator
-            sandboxé sur les domaines hardware / code.
-          </p>
-        </div>
-      </section>
-
       {/* Auto-router par domaine — flow moderne */}
       <section className="wrap block">
         <div className="block-head">
