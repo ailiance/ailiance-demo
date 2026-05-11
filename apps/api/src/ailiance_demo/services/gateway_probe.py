@@ -17,11 +17,51 @@ from ailiance_demo.models.status import RouterStats, WorkerStatus
 log = structlog.get_logger()
 
 WORKERS = [
-    {"id": "mistral-medium-3.5", "label": "Mistral Medium 3.5 128B", "url": "http://studio:9301", "host": "studio"},
-    {"id": "gemma4-e4b-curriculum", "label": "Gemma 4 E4B + ailiance curriculum LoRA", "url": "http://macm1:8502", "host": "macm1"},
-    {"id": "eurollm", "label": "EuroLLM 22B", "url": "http://studio:9303", "host": "studio"},
-    {"id": "gemma3", "label": "Gemma 3 4B", "url": "http://tower:9304", "host": "tower"},
-    {"id": "qwen3-next", "label": "Qwen3-Next 80B", "url": "http://host.docker.internal:8002", "host": "kxkm-ai (RTX 4090, via autossh tunnel)"},
+    {
+        "id": "mistral-medium-3.5",
+        "label": "Mistral Medium 3.5 128B",
+        "url": "http://studio:9301",
+        "host": "studio",
+        "gpu": "Apple M3 Ultra (76-core GPU)",
+        "vram_gb": 512.0,
+        "tdp_w": 215,
+    },
+    {
+        "id": "gemma4-e4b-curriculum",
+        "label": "Gemma 4 E4B + ailiance curriculum LoRA",
+        "url": "http://macm1:8502",
+        "host": "macm1",
+        "gpu": "Apple M1 (8-core GPU)",
+        "vram_gb": 32.0,
+        "tdp_w": 30,
+    },
+    {
+        "id": "eurollm",
+        "label": "EuroLLM 22B",
+        "url": "http://studio:9303",
+        "host": "studio",
+        "gpu": "Apple M3 Ultra (76-core GPU)",
+        "vram_gb": 512.0,
+        "tdp_w": 215,
+    },
+    {
+        "id": "gemma3",
+        "label": "Gemma 3 4B",
+        "url": "http://tower:9304",
+        "host": "tower",
+        "gpu": "NVIDIA Quadro P2000",
+        "vram_gb": 5.0,
+        "tdp_w": 75,
+    },
+    {
+        "id": "qwen3-next",
+        "label": "Qwen3-Next 80B",
+        "url": "http://host.docker.internal:8002",
+        "host": "kxkm-ai (RTX 4090, via autossh tunnel)",
+        "gpu": "NVIDIA RTX 4090",
+        "vram_gb": 24.0,
+        "tdp_w": 450,
+    },
 ]
 
 # Light, mutable cache. The router endpoint sets _cache when it refreshes.
@@ -42,22 +82,61 @@ def _cache_set(key: str, value: object) -> None:
     _cache[key] = (time.monotonic(), value)
 
 
+def _energy_per_day(tdp_w: int | None, healthy: bool) -> float | None:
+    """Rough daily energy estimate. Assumes 24h continuous active.
+
+    For DOWN workers we still report the upper-bound estimate so the user
+    can see what the worker would draw when running. Real-world figures
+    would require a wattmeter — these are conservative TDP-based caps.
+    """
+    if tdp_w is None:
+        return None
+    _ = healthy  # could discount when down; keep upper bound for now
+    return round(tdp_w * 24 / 1000.0, 2)
+
+
+def _tokens_today_estimate(body: dict, healthy: bool) -> int | None:
+    """If the worker exposes a `tokens_total` counter, derive today's
+    contribution from `uptime_s` linearly. Returns None when unknown."""
+    if not healthy:
+        return None
+    tokens_total = body.get("tokens_total")
+    uptime_s = body.get("uptime_s", 0)
+    if not isinstance(tokens_total, int) or not isinstance(uptime_s, int) or uptime_s <= 0:
+        return None
+    # Project the daily rate from the lifetime mean. Cap at the lifetime
+    # total so a fresh worker doesn't show an inflated number.
+    rate_per_s = tokens_total / uptime_s
+    return min(int(rate_per_s * 86400), tokens_total)
+
+
 async def _probe_one(client: httpx.AsyncClient, w: dict) -> WorkerStatus:
     started = time.monotonic()
+    static_md = {
+        "gpu": w.get("gpu"),
+        "vram_gb": w.get("vram_gb"),
+        "tdp_w": w.get("tdp_w"),
+    }
     try:
         r = await client.get(f"{w['url']}/health", timeout=2.0)
         ok = r.status_code == 200
         body = r.json() if ok else {}
         latency_ms = round((time.monotonic() - started) * 1000, 1)
+        healthy = ok and body.get("status") == "ok"
+        load_pct = body.get("load_pct")
         return WorkerStatus(
             id=w["id"],
             label=w["label"],
             host=w["host"],
-            healthy=ok and body.get("status") == "ok",
+            healthy=healthy,
             latency_ms=latency_ms,
             model_loaded=bool(body.get("model_loaded", body.get("router_loaded", False))),
             uptime_s=int(body.get("uptime_s", 0)),
             error=None,
+            load_pct=float(load_pct) if isinstance(load_pct, (int, float)) else None,
+            tokens_today=_tokens_today_estimate(body, healthy),
+            kwh_per_day=_energy_per_day(static_md["tdp_w"], healthy),
+            **static_md,
         )
     except Exception as exc:  # noqa: BLE001
         return WorkerStatus(
@@ -69,6 +148,10 @@ async def _probe_one(client: httpx.AsyncClient, w: dict) -> WorkerStatus:
             model_loaded=False,
             uptime_s=0,
             error=str(exc)[:120],
+            load_pct=None,
+            tokens_today=None,
+            kwh_per_day=_energy_per_day(static_md["tdp_w"], healthy=False),
+            **static_md,
         )
 
 

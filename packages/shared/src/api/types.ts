@@ -31,6 +31,12 @@ export interface components {
       model_loaded: boolean;
       uptime_s: number;
       error?: string | null;
+      gpu?: string | null;
+      vram_gb?: number | null;
+      tdp_w?: number | null;
+      load_pct?: number | null;
+      tokens_today?: number | null;
+      kwh_per_day?: number | null;
     };
     StatusReport: {
       workers: components['schemas']['WorkerStatus'][];
