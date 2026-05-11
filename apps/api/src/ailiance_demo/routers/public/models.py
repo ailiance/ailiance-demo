@@ -43,6 +43,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "mlx",
         "license": "modified-mit",
         "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/mistralai/Mistral-Medium-3.5-128B-Instruct",
     },
     "ailiance/gemma4-e4b-curriculum": {
         "display_name": "Gemma 4 E4B + ailiance curriculum LoRA",
@@ -63,6 +64,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "mlx",
         "license": "gemma-terms",
         "kind": ModelKind.FINE_TUNED,
+        "hf_url": "https://huggingface.co/Ailiance-fr/gemma-4-E4B-eukiki-lora",
     },
     "ailiance/eurollm-22b": {
         "display_name": "EuroLLM 22B",
@@ -81,6 +83,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "mlx",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/utter-project/EuroLLM-22B-Instruct-2512",
     },
     "ailiance/qwen3-next-80b-a3b-instruct": {
         "display_name": "Qwen3-Next 80B A3B Instruct",
@@ -102,6 +105,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "gguf",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct",
     },
     "ailiance/gemma3-4b": {
         "display_name": "Gemma 3 4B IT",
@@ -120,6 +124,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "transformers",
         "license": "gemma-terms",
         "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/google/gemma-3-4b-it",
     },
     "ailiance/auto": {
         "display_name": "Auto-router",
@@ -143,6 +148,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "safetensors",
         "license": "apache-2.0",
         "kind": ModelKind.FINE_TUNED,
+        "hf_url": "https://huggingface.co/Ailiance-fr/router-v6-minilm",
     },
     "ailiance/granite-30b": {
         "display_name": "Granite 4.1 30B Instruct",
@@ -163,6 +169,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "gguf",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/ibm-granite/granite-4.1-30B-instruct",
     },
     "ailiance/ministral-14b": {
         "display_name": "Ministral 3 14B Instruct",
@@ -181,6 +188,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "mlx",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/mistralai/Ministral-3-14B-Instruct-2512",
     },
     "ailiance/ministral-14b-reasoning": {
         "display_name": "Ministral 3 14B Reasoning",
@@ -199,6 +207,7 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "mlx",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/mistralai/Ministral-3-14B-Reasoning-2512",
     },
 }
 
@@ -299,7 +308,10 @@ def _live_cards() -> list[ModelCard]:
                 chat_eligible=True,
                 featured_rank=0,
                 featured_headline=details.get("headline"),
-                hf_url=f"https://huggingface.co/{alias}",
+                # Per-entry hf_url when known (upstream base or Ailiance-fr
+                # adapter); fall back to the org page since the bare
+                # huggingface.co/ailiance/... namespace is squatted (401).
+                hf_url=details.get("hf_url", "https://huggingface.co/Ailiance-fr"),
                 parameters=details.get("parameters"),
                 disk_size_bytes=details.get("disk_size_bytes"),
                 memory_gb=details.get("memory_gb"),
