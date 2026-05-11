@@ -105,6 +105,39 @@ services:
       - "traefik.http.routers.kiki-public.service=kiki-public"
       - "traefik.http.routers.kiki-public.priority=1"
 
+  # Staging preview of the public vitrine. Same image as prod public
+  # but a separate container so we can rebuild from latest main (or a
+  # feature branch) without disturbing www.ailiance.fr. Routed by Traefik
+  # on preview.ailiance.fr.
+  preview:
+    <<: [*restart, *logging]
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: public
+      args:
+        VITE_API_BASE_URL: ""
+    image: ailiance-demo-public:${PREVIEW_TAG:-preview}
+    networks:
+      - traefik
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.services.kiki-preview.loadbalancer.server.port=80"
+      - "traefik.http.routers.kiki-preview.rule=Host(`preview.ailiance.fr`)"
+      - "traefik.http.routers.kiki-preview.entrypoints=websecure"
+      - "traefik.http.routers.kiki-preview.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.routers.kiki-preview.service=kiki-preview"
+      - "traefik.http.routers.kiki-preview.priority=1"
+      # Re-export /api for the preview host without touching the api
+      # container labels (Traefik aggregates labels across all containers
+      # on the docker provider).
+      - "traefik.http.routers.kiki-api-preview.rule=Host(`preview.ailiance.fr`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.kiki-api-preview.entrypoints=websecure"
+      - "traefik.http.routers.kiki-api-preview.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.routers.kiki-api-preview.service=kiki-api"
+      - "traefik.http.routers.kiki-api-preview.middlewares=kiki-api-ratelimit"
+
   collector:
     <<: [*restart, *logging]
     build:
