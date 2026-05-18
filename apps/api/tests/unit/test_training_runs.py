@@ -5,12 +5,23 @@ from pathlib import Path
 from ailiance_demo.models import TrainingRunStatus
 from ailiance_demo.services.training_runs import discover_runs, summarize_run
 
-FIXTURE = Path(__file__).parent.parent / "fixtures" / "training_logs"
+# Inlined fixture: a real sample.log would be a *.log file, which the repo
+# .gitignore excludes — so the sample lives here as a constant instead.
+# Format mirrors mlx_lm training output parsed by services/log_tail.py.
+SAMPLE_LOG = """\
+Starting training run...
+Iter 100: Train loss 0.812, Learning Rate 1.000e-05
+Iter 200: Train loss 0.654, Learning Rate 1.000e-05
+Iter 200: Val loss 0.701, Val took 12.300s
+Iter 300: Train loss 0.531, Learning Rate 1.000e-05
+Iter 400: Val loss 0.532, Val took 11.800s
+Iter 400: Train loss 0.479, Learning Rate 1.000e-05
+"""
 
 
 def test_discover_runs_finds_log_files(tmp_path: Path) -> None:
     (tmp_path / "logs").mkdir()
-    sample = (FIXTURE / "sample.log").read_text()
+    sample = SAMPLE_LOG
     (tmp_path / "logs" / "mistral-large-opus.log").write_text(sample)
     (tmp_path / "logs" / "qwen-35b.log").write_text(sample)
 
@@ -24,7 +35,7 @@ def test_discover_runs_finds_log_files(tmp_path: Path) -> None:
 
 
 def test_summarize_run_extracts_last_metrics(tmp_path: Path) -> None:
-    sample = (FIXTURE / "sample.log").read_text()
+    sample = SAMPLE_LOG
     log_path = tmp_path / "test.log"
     log_path.write_text(sample)
 
@@ -41,7 +52,7 @@ def test_summarize_run_extracts_last_metrics(tmp_path: Path) -> None:
 def test_summarize_run_marks_old_files_completed(tmp_path: Path) -> None:
     import os
     import time
-    sample = (FIXTURE / "sample.log").read_text()
+    sample = SAMPLE_LOG
     log_path = tmp_path / "old.log"
     log_path.write_text(sample)
     # Set mtime to 10 minutes ago

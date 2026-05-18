@@ -16,7 +16,12 @@ async def test_fetch_models_for_owner_parses_response() -> None:
     fixture = json.loads((FIXTURES / "Ailiance-fr_models.json").read_text())
 
     def handler(request: httpx.Request) -> httpx.Response:
-        assert "/api/models" in str(request.url)
+        url = str(request.url)
+        # _enrich_models fans out to /api/models/{id} for per-model detail;
+        # those requests carry no `author` param.
+        if "/api/models/" in url:
+            return httpx.Response(200, json={})
+        assert "/api/models" in url
         assert request.url.params["author"] == "Ailiance-fr"
         return httpx.Response(200, json=fixture)
 

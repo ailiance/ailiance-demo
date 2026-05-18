@@ -22,11 +22,13 @@ def test_is_chat_eligible_returns_false_for_hf_models() -> None:
 
 @pytest.mark.asyncio
 async def test_stream_chat_forwards_sse_events() -> None:
+    """Each OpenAI-style content delta is forwarded as its own event: token."""
+
     async def server_handler(request: httpx.Request) -> httpx.Response:
         async def emit():
-            yield b'event: token\ndata: {"text":"Hello"}\n\n'
-            yield b'event: token\ndata: {"text":" world"}\n\n'
-            yield b'event: done\ndata: {}\n\n'
+            yield b'data: {"choices":[{"delta":{"content":"Hello"}}]}\n\n'
+            yield b'data: {"choices":[{"delta":{"content":" world"}}]}\n\n'
+            yield b'data: [DONE]\n\n'
         return httpx.Response(200, content=emit(), headers={"content-type": "text/event-stream"})
 
     transport = httpx.MockTransport(server_handler)
@@ -47,7 +49,8 @@ async def test_stream_chat_forwards_sse_events() -> None:
 
     raw = b"".join(chunks)
     assert b'event: token' in raw
-    assert b'"text":"Hello"' in raw
+    assert b'"text": "Hello"' in raw
+    assert b'"text": " world"' in raw
     assert b'event: done' in raw
 
 

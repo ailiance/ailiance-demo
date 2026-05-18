@@ -70,8 +70,9 @@ def test_workers_constant_matches_production_fleet():
 
     ids = {w["id"] for w in WORKERS}
     assert ids == {
-        "studio-mlx", "studio-eurollm", "macm1-mlx", "tower-gemma",
-        "tower-ollama", "kxkm-qwen", "kxkm-granite",
+        "studio-mistral-medium", "studio-reasoning-r1", "studio-pixtral",
+        "studio-mistral-small", "studio-coder-pro", "studio-devstral-multi",
+        "macm1-mlx", "tower-gemma", "tower-ollama", "kxkm-qwen", "kxkm-granite",
     }
     by_id = {w["id"]: w for w in WORKERS}
     # kxkm-* and tower-ollama reach the cockpit via autossh tunnels owned by
@@ -81,5 +82,5 @@ def test_workers_constant_matches_production_fleet():
     assert "host.docker.internal" in by_id["kxkm-granite"]["url"]
     assert "host.docker.internal" in by_id["tower-ollama"]["url"]
     # Other workers are addressed over Tailscale magic DNS.
-    assert by_id["studio-mlx"]["url"] == "http://studio:9301"
+    assert by_id["studio-mistral-medium"]["url"] == "http://studio:9301"
     assert by_id["tower-gemma"]["url"] == "http://tower:9304"
