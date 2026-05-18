@@ -4,19 +4,26 @@ import {
   getModelDetail,
   getProvenance,
 } from '@/lib/server-fns';
-import { createFileRoute } from '@tanstack/react-router';
+import { ApiError } from '@cockpit/shared';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/models/$owner/$name')({
+  notFoundComponent: () => (
+    <main className="wrap" style={{ padding: '64px 0' }}>
+      <h1 className="display">Modèle introuvable.</h1>
+    </main>
+  ),
   loader: async ({ params }) => {
-    const model = await getModelDetail({ data: params });
+    const model = await getModelDetail({ data: params }).catch((err) => {
+      if (err instanceof ApiError && err.status === 404) throw notFound();
+      throw err;
+    });
     const isMascarade = params.owner === 'ailiance' && params.name === 'mascarade';
-    return {
-      model,
-      evalScores: await getEvalScores({ data: params }),
-      loras: isMascarade ? await getMascaradeLoras() : [],
-      provenance: await getProvenance({
-        data: { modelId: `${params.owner}/${params.name}` },
-      }),
-    };
+    const [evalScores, loras, provenance] = await Promise.all([
+      getEvalScores({ data: params }),
+      isMascarade ? getMascaradeLoras() : Promise.resolve([]),
+      getProvenance({ data: { modelId: `${params.owner}/${params.name}` } }),
+    ]);
+    return { model, evalScores, loras, provenance };
   },
 });

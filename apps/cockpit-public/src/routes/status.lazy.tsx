@@ -1,6 +1,8 @@
 import type { components } from '@cockpit/shared';
-import { createLazyFileRoute, useRouter } from '@tanstack/react-router';
+import { createLazyFileRoute, getRouteApi, useRouter } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
+
+const rootRoute = getRouteApi('__root__');
 
 type WorkerStatus = components['schemas']['WorkerStatus'];
 
@@ -147,7 +149,8 @@ const INCIDENTS = [
 ];
 
 function StatusPage() {
-  const { status: statusData, telemetry } = Route.useLoaderData();
+  const { status: statusData } = Route.useLoaderData();
+  const { telemetry } = rootRoute.useLoaderData();
   const router = useRouter();
   const [tick, setTick] = useState(0);
   const [lastPoll, setLastPoll] = useState('');

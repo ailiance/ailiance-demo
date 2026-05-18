@@ -1,9 +1,11 @@
-import { getStatus, getTelemetry } from '@/lib/server-fns';
+import { getStatus } from '@/lib/server-fns';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/status')({
-  loader: async () => ({
-    status: await getStatus(),
-    telemetry: await getTelemetry(),
-  }),
+  loader: async () => {
+    const [statusResult] = await Promise.allSettled([getStatus()]);
+    return {
+      status: statusResult.status === 'fulfilled' ? statusResult.value : null,
+    };
+  },
 });
