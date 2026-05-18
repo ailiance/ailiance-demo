@@ -28,9 +28,10 @@ jobs:
       - name: Install JS deps
         run: pnpm install --frozen-lockfile
 
-      - name: Generate API types (best-effort, skip if API not ready)
-        run: pnpm gen:api-types || echo "API types generation skipped"
-        continue-on-error: true
+      - name: Generate API types
+        # types.ts is generated, not tracked — typecheck below has no
+        # source of truth unless this step succeeds. Must not be soft.
+        run: pnpm gen:api-types
 
       - name: Lint (biome)
         run: pnpm lint
