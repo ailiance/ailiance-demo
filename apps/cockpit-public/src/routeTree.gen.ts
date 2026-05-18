@@ -24,32 +24,32 @@ const TransparencyRoute = TransparencyRouteImport.update({
   id: '/transparency',
   path: '/transparency',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/transparency.lazy').then((d) => d.Route))
 const StatusRoute = StatusRouteImport.update({
   id: '/status',
   path: '/status',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/status.lazy').then((d) => d.Route))
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/chat.lazy').then((d) => d.Route))
 const CatalogRoute = CatalogRouteImport.update({
   id: '/catalog',
   path: '/catalog',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/catalog.lazy').then((d) => d.Route))
 const BenchRoute = BenchRouteImport.update({
   id: '/bench',
   path: '/bench',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/bench.lazy').then((d) => d.Route))
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -59,17 +59,21 @@ const ModelsIndexRoute = ModelsIndexRouteImport.update({
   id: '/models/',
   path: '/models/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/models.index.lazy').then((d) => d.Route))
 const ModelsOwnerNameRoute = ModelsOwnerNameRouteImport.update({
   id: '/models/$owner/$name',
   path: '/models/$owner/$name',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() =>
+  import('./routes/models.$owner.$name.lazy').then((d) => d.Route),
+)
 const ChatOwnerNameRoute = ChatOwnerNameRouteImport.update({
   id: '/$owner/$name',
   path: '/$owner/$name',
   getParentRoute: () => ChatRoute,
-} as any)
+} as any).lazy(() =>
+  import('./routes/chat.$owner.$name.lazy').then((d) => d.Route),
+)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
