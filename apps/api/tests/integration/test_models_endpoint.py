@@ -11,7 +11,6 @@ def test_list_models_returns_cards(client_with_cache: TestClient) -> None:
     # Live workers + auto-router + 12 mascarade specialists + mocked HF entry.
     assert {
         "ailiance/mistral-medium-3.5-128b",
-        "ailiance/eurollm-22b",
         "ailiance/gemma3-4b",
         "ailiance/qwen3-next-80b-a3b-instruct",
         "ailiance/granite-30b",
