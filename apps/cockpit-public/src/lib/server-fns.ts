@@ -6,6 +6,7 @@ import { serverApi } from './server-api';
 type ModelCard = components['schemas']['ModelCard'];
 type StatusReport = components['schemas']['StatusReport'];
 type EvalSummary = components['schemas']['EvalSummary'];
+type TelemetryResponse = components['schemas']['TelemetryResponse'];
 
 export interface MascaradeLora {
   name: string;
@@ -33,6 +34,10 @@ export const getModels = createServerFn({ method: 'GET' }).handler(
 
 export const getStatus = createServerFn({ method: 'GET' }).handler(
   async () => serverApi.get<StatusReport>('/api/public/status'),
+);
+
+export const getTelemetry = createServerFn({ method: 'GET' }).handler(
+  async () => serverApi.get<TelemetryResponse>('/api/public/telemetry'),
 );
 
 export const getModelDetail = createServerFn({ method: 'GET' })
