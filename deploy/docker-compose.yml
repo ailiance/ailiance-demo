@@ -38,6 +38,10 @@ services:
       # ailiance gateway lives on the same host (electron-server) — co-located
       # so chat proxy never crosses the public internet.
       COCKPIT_AILIANCE_GATEWAY_URL: ${COCKPIT_AILIANCE_GATEWAY_URL:-http://host.docker.internal:9300}
+      # Admin token for the medium35 training campaign endpoints. Held by
+      # the cockpit-api only; never exposed to the browser. Read from the
+      # host env so it doesn't end up in the compose file.
+      COCKPIT_AILIANCE_ADMIN_TOKEN: ${COCKPIT_AILIANCE_ADMIN_TOKEN:-}
       # Workers are pinged via Tailscale Magic DNS — same network agent-kiki
       # uses (see cli/src/utils/ailiance-default.ts).
       COCKPIT_HF_TOKEN: ${HF_TOKEN:-}
