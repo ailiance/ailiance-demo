@@ -98,15 +98,17 @@ WORKERS = [
         "gpu": "Apple M1 (8-core GPU)",
         "vram_gb": 32.0,
         "tdp_w": 30,
+        # ailiance-granite is NOT here: the gateway force-maps that alias to
+        # kxkm-ai :8003, not macM1. macM1 hosts a granite-4.1-30b model but
+        # the gateway never routes the alias to it.
         "gateway_aliases": [
             "ailiance-gemma2", "ailiance-gemma4", "ailiance-ministral",
-            "ailiance-ministral-reasoning", "ailiance-granite",
+            "ailiance-ministral-reasoning",
         ],
         "served_models": [
             "gemma-4-E4B-it-MLX-4bit",
             "Ministral-3-14B-Instruct-2512-4bit",
             "Ministral-3-14B-Reasoning-2512-4bit",
-            "granite-4.1-30b-4bit",
         ],
     },
     # --- Tower (NVIDIA Quadro P2000, 5 GB) ---
@@ -122,6 +124,11 @@ WORKERS = [
         "served_models": ["gemma-3-4b-it (Q4 GGUF)"],
     },
     {
+        # The 10 hardware mascarade aliases (kicad/spice/stm32/emc/embedded/
+        # platformio/freecad/dsp/iot/power) moved to the Studio MLX worker
+        # :9340 with PR #100/#102. Tower Ollama now only backs the two
+        # aliases the gateway still force-maps to :8004, plus the embed
+        # surface.
         "id": "tower-ollama",
         "label": "Tower · Ollama mascarade :8004",
         "url": "http://host.docker.internal:8004",
@@ -130,17 +137,30 @@ WORKERS = [
         "vram_gb": 5.0,
         "tdp_w": 75,
         "gateway_aliases": [
+            "ailiance-components-review", "ailiance-coder", "ailiance-embed",
+        ],
+        "served_models": [
+            "mascarade-components-review", "mascarade-coder-v2", "bge-m3",
+        ],
+    },
+    # --- Studio (M3 Ultra) MLX bf16 mascarade experts ---
+    {
+        "id": "studio-mascarade",
+        "label": "Mac Studio · MLX mascarade :9340",
+        "url": "http://host.docker.internal:9340",
+        "host": "studio (autossh tunnel)",
+        "gpu": "Apple M3 Ultra (76-core GPU)",
+        "vram_gb": 512.0,
+        "tdp_w": 215,
+        "gateway_aliases": [
             "ailiance-kicad", "ailiance-spice", "ailiance-stm32", "ailiance-emc",
             "ailiance-embedded", "ailiance-platformio", "ailiance-freecad",
             "ailiance-dsp", "ailiance-iot", "ailiance-power",
-            "ailiance-components-review", "ailiance-coder",
         ],
         "served_models": [
             "mascarade-kicad", "mascarade-spice", "mascarade-stm32",
             "mascarade-emc", "mascarade-embedded", "mascarade-platformio",
-            "mascarade-freecad", "mascarade-dsp", "mascarade-iot",
-            "mascarade-power", "mascarade-coder-v2", "mascarade-components-review",
-            "mascarade-generic",
+            "mascarade-freecad", "mascarade-dsp", "mascarade-iot", "mascarade-power",
         ],
     },
     # --- kxkm-ai (RTX 4090, 24 GB) ---

@@ -72,15 +72,17 @@ def test_workers_constant_matches_production_fleet():
     assert ids == {
         "studio-mistral-medium", "studio-reasoning-r1", "studio-pixtral",
         "studio-mistral-small", "studio-coder-pro", "studio-devstral-multi",
-        "macm1-mlx", "tower-gemma", "tower-ollama", "kxkm-qwen", "kxkm-granite",
+        "studio-mascarade", "macm1-mlx", "tower-gemma", "tower-ollama",
+        "kxkm-qwen", "kxkm-granite",
     }
     by_id = {w["id"]: w for w in WORKERS}
-    # kxkm-* and tower-ollama reach the cockpit via autossh tunnels owned by
-    # the gateway host; from inside the api container we must talk to
-    # host.docker.internal.
+    # kxkm-*, tower-ollama and studio-mascarade reach the cockpit via autossh
+    # tunnels owned by the gateway host; from inside the api container we must
+    # talk to host.docker.internal.
     assert "host.docker.internal" in by_id["kxkm-qwen"]["url"]
     assert "host.docker.internal" in by_id["kxkm-granite"]["url"]
     assert "host.docker.internal" in by_id["tower-ollama"]["url"]
+    assert "host.docker.internal" in by_id["studio-mascarade"]["url"]
     # Other workers are addressed over Tailscale magic DNS.
     assert by_id["studio-mistral-medium"]["url"] == "http://studio:9301"
     assert by_id["tower-gemma"]["url"] == "http://tower:9304"
