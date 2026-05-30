@@ -316,7 +316,7 @@ function BenchPage() {
           }}
         >
           L'alias <code>ailiance</code> route automatiquement chaque requête vers le worker
-          spécialisé via un classifier MLP entraîné sur 32 classes de domaine.
+          spécialisé via un classifier MLP entraîné sur 47 classes de domaine.
         </p>
         <div style={{ overflowX: 'auto', borderTop: '1px solid var(--rule)', marginTop: 12 }}>
           <table
@@ -332,7 +332,7 @@ function BenchPage() {
                 <th style={thStyle}>Version</th>
                 <th style={thStyle}>Encoder</th>
                 <th style={{ ...thStyle, textAlign: 'right' }}>Hidden</th>
-                <th style={{ ...thStyle, textAlign: 'right' }}>Top-1</th>
+                <th style={{ ...thStyle, textAlign: 'right' }}>Macro-F1</th>
                 <th style={{ ...thStyle, textAlign: 'right' }}>Top-3</th>
                 <th style={thStyle}>Notes</th>
               </tr>
@@ -340,33 +340,25 @@ function BenchPage() {
             <tbody>
               <tr style={{ borderBottom: '1px solid var(--rule-soft, var(--rule))' }}>
                 <td style={tdStyle}>
-                  <code>v6</code> (prod)
+                  <code>v9</code> (prod)
                 </td>
-                <td style={tdStyle}>jina-v3 1024d</td>
-                <td style={{ ...tdStyle, textAlign: 'right' }}>512</td>
-                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: 600 }}>0.877</td>
-                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: 600 }}>0.987</td>
-                <td style={tdStyle}>déployé depuis 2026-05-08</td>
-              </tr>
-              <tr style={{ borderBottom: '1px solid var(--rule-soft, var(--rule))' }}>
-                <td style={tdStyle}>
-                  <code>v7</code>
-                </td>
-                <td style={tdStyle}>MiniLM-L6 384d</td>
+                <td style={tdStyle}>MiniLM-L6-v2 384d</td>
                 <td style={{ ...tdStyle, textAlign: 'right' }}>256</td>
-                <td style={{ ...tdStyle, textAlign: 'right' }}>0.879</td>
-                <td style={{ ...tdStyle, textAlign: 'right' }}>0.988</td>
-                <td style={tdStyle}>test régression encoder</td>
+                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: 600 }}>0.889</td>
+                <td style={{ ...tdStyle, textAlign: 'right', fontWeight: 600 }}>0.988</td>
+                <td style={tdStyle}>47 domaines · déployé 2026-05-29</td>
               </tr>
               <tr style={{ borderBottom: '1px solid var(--rule-soft, var(--rule))' }}>
                 <td style={tdStyle}>
-                  <code>v8</code>
+                  <code>v6</code> (candidat)
                 </td>
                 <td style={tdStyle}>jina-v3 1024d</td>
                 <td style={{ ...tdStyle, textAlign: 'right' }}>512</td>
-                <td style={{ ...tdStyle, textAlign: 'right' }}>0.875</td>
-                <td style={{ ...tdStyle, textAlign: 'right' }}>—</td>
-                <td style={tdStyle}>data augmentée, variation marginale</td>
+                <td style={{ ...tdStyle, textAlign: 'right' }}>0.874</td>
+                <td style={{ ...tdStyle, textAlign: 'right' }}>0.987</td>
+                <td style={tdStyle}>
+                  évalué puis écarté (top-1 inférieur, encodage ~6× plus lent)
+                </td>
               </tr>
             </tbody>
           </table>

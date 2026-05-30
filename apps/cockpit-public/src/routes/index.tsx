@@ -91,8 +91,8 @@ function HomePage() {
           </p>
           <div className="hero-meta">
             <div>
-              <span>5</span> workers · <span>24</span> LoRA publics · <span>31</span> domaines
-              évalués
+              <span>26</span> aliases gateway · <span>47</span> domaines routés · <span>31</span>{' '}
+              domaines évalués
             </div>
             <div>
               <span>0</span> dépendance cloud · <span>0</span> log de prompt persisté
@@ -116,7 +116,7 @@ function HomePage() {
             en quatre missions.
           </h2>
           <p className="lede">
-            Pourquoi exploiter cinq workers sur du matériel personnel quand un appel d'API
+            Pourquoi exploiter sa propre flotte sur du matériel personnel quand un appel d'API
             suffirait&nbsp;? Parce qu'il existe encore un standard plus exigeant que la latence : la{' '}
             <em>traçabilité</em>.
           </p>

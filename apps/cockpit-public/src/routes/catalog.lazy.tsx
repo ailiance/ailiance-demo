@@ -83,7 +83,7 @@ function CatalogPage() {
         >
           Source-of-truth des poids LoRA et modèles fine-tunés Ailiance software, distribués
           publiquement sur HuggingFace. {aiCount} dépôts <code>Ailiance-fr</code> (fine-tunes
-          mascarade, devstral, gemma-4, apertus, eurollm) et {erCount} dépôts{' '}
+          mascarade, qwen36, devstral, gemma-4, apertus, eurollm) et {erCount} dépôts{' '}
           <code>electron-rare</code> <span className="badge hf">legacy</span> conservés pour
           traçabilité historique des releases avant la migration sur l'organisation{' '}
           <code>Ailiance-fr</code>.

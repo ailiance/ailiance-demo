@@ -34,12 +34,12 @@ _LIVE_DETAILS: dict[str, dict] = {
             "high-revenue enterprises require Mistral's paid API. "
             "262 k context window. Runs on Mac Studio M3 Ultra."
         ),
-        "headline": "128B params · MLX Q8 · 262k context · Mac Studio M3 Ultra",
+        "headline": "128B params · MLX Q8 · 262k context · omlx (Mac Studio M3 Ultra)",
         "parameters": 128_000_000_000,
         "disk_size_bytes": 124 * _GIB,
         "memory_gb": 130.0,
         "quantization": "MLX Q8",
-        "host": "studio (Mac Studio M3 Ultra)",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
         "architecture": "mlx",
         "license": "modified-mit",
         "kind": ModelKind.QUANTIZED,
@@ -57,14 +57,15 @@ _LIVE_DETAILS: dict[str, dict] = {
             "Google Gemma 4 E4B Instruction-Tuned avec adapter LoRA fine-tuné "
             "en curriculum 4 phases (seq 512 → 1024 → 2048 → 3072) sur le "
             "dataset ailiance (~82k conversations, electronics + code). "
-            "Test loss 2.094 (perplexity 8.12). Tourne sur Mac mini M1."
+            "Test loss 2.094 (perplexity 8.12). Sert aussi de fallback vision "
+            "léger. Servi par le serveur omlx sur Mac Studio (:8500)."
         ),
-        "headline": "E4B · MLX 4-bit + LoRA · Mac mini M1",
+        "headline": "E4B · MLX 4-bit + LoRA · omlx (Mac Studio)",
         "parameters": 4_000_000_000,
         "disk_size_bytes": 4 * _GIB,
         "memory_gb": 12.0,
         "quantization": "MLX 4-bit + LoRA",
-        "host": "macm1 (Mac mini M1)",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
         "architecture": "mlx",
         "license": "gemma-terms",
         "kind": ModelKind.FINE_TUNED,
@@ -72,65 +73,87 @@ _LIVE_DETAILS: dict[str, dict] = {
         "top_eval_score": 0.61,
         "top_eval_benchmark": "MT-Bench-FR (LoRA tuned)",
     },
-    "ailiance/qwen3-next-80b-a3b-instruct": {
-        "display_name": "Qwen3-Next 80B A3B Instruct",
-        "base_model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
-        "domain": "reasoning",
+    "ailiance/qwen3-coder-next-80b": {
+        "display_name": "Qwen3-Coder-Next 80B (qwen36 multi-LoRA)",
+        "base_model": "Qwen/Qwen3-Coder-Next-80B-A3B",
+        "domain": "code",
         "description": (
-            "Qwen3-Next 80B sparse MoE (3B active per token) — Q4_K_M GGUF "
-            "served by llama.cpp on kxkm-ai (NVIDIA RTX 4090 24 GB). MoE "
-            "expert offload: attention layers on GPU, ffn experts in CPU "
-            "RAM via --override-tensor. Reachable from the gateway via "
-            "autossh tunnel (electron-server:8002 → kxkm-ai:18888)."
+            "Qwen3-Coder-Next 80B sparse MoE (3B active per token) — 8-bit "
+            "MLX served by the omlx server on Mac Studio. Also the base for "
+            "the qwen36-35B multi-LoRA hardware/code specialists (30 adapters "
+            "hot-swapped on the :9360 / :9361 instances)."
         ),
-        "headline": "80B MoE / 3B active · Q4_K_M · RTX 4090 + RAM offload",
+        "headline": "80B MoE / 3B active · MLX 8-bit · omlx (Mac Studio)",
         "parameters": 80_000_000_000,
         "disk_size_bytes": 48_410_988_384,
-        "memory_gb": 50.0,  # ~6 GB VRAM (attention + KV q8_0) + ~44 GB RAM (experts)
-        "quantization": "Q4_K_M",
-        "host": "kxkm-ai (NVIDIA RTX 4090 24 GB + 64 GB RAM)",
-        "architecture": "gguf",
+        "memory_gb": 50.0,
+        "quantization": "MLX 8-bit",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+        "architecture": "mlx",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
-        "hf_url": "https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct",
+        "hf_url": "https://huggingface.co/Qwen",
         "top_eval_score": 0.91,
         "top_eval_benchmark": "MMLU / GSM8K",
     },
-    "ailiance/gemma3-4b": {
-        "display_name": "Gemma 3 4B IT",
-        "base_model": "google/gemma-3-4b-it",
+    "ailiance/eurollm-22b": {
+        "display_name": "EuroLLM 22B Instruct",
+        "base_model": "utter-project/EuroLLM-22B-Instruct",
+        "domain": "multilingual",
+        "description": (
+            "EU-sovereign multilingual instruction model covering all 24 EU "
+            "official languages. MLX-served by the omlx server on Mac Studio "
+            "(:8500)."
+        ),
+        "headline": "22B · multilingual EU · omlx (Mac Studio)",
+        "parameters": 22_000_000_000,
+        "disk_size_bytes": 45 * _GIB,
+        "memory_gb": 45.0,
+        "quantization": "MLX",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+        "architecture": "mlx",
+        "license": "apache-2.0",
+        "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/utter-project",
+        "top_eval_score": 0.74,
+        "top_eval_benchmark": "MT-Bench (multilingual)",
+    },
+    "ailiance/apertus-70b": {
+        "display_name": "Apertus 70B Instruct",
+        "base_model": "swiss-ai/Apertus-70B-Instruct-2509",
         "domain": "general",
         "description": (
-            "Google DeepMind Gemma 3 4B Instruction-Tuned — small, fast, "
-            "multilingual. Runs on tower (NVIDIA Quadro P2000, 5 GB VRAM)."
+            "Swiss-sovereign Apertus 70B instruction model. The BF16 source "
+            "was deleted in the storage cleanup; the 4-bit MLX build is "
+            "retained and served on demand by the omlx server on Mac Studio."
         ),
-        "headline": "4B params · BF16 · NVIDIA Quadro P2000",
-        "parameters": 4_000_000_000,
-        "disk_size_bytes": 8 * _GIB,
-        "memory_gb": 8.0,
-        "quantization": "BF16",
-        "host": "tower (NVIDIA Quadro P2000 5 GB)",
-        "architecture": "transformers",
-        "license": "gemma-terms",
+        "headline": "70B · MLX 4-bit · omlx (Mac Studio)",
+        "parameters": 70_000_000_000,
+        "disk_size_bytes": 37 * _GIB,
+        "memory_gb": 40.0,
+        "quantization": "MLX 4-bit",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+        "architecture": "mlx",
+        "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
-        "hf_url": "https://huggingface.co/google/gemma-3-4b-it",
-        "top_eval_score": 0.59,
-        "top_eval_benchmark": "MMLU (small-model class)",
+        "hf_url": "https://huggingface.co/swiss-ai",
+        "top_eval_score": 0.80,
+        "top_eval_benchmark": "MMLU",
     },
     "ailiance/auto": {
         "display_name": "Auto-router",
-        "base_model": "MiniLM L6 v2 384d + 2-layer MLP",
+        "base_model": "all-MiniLM-L6-v2 384d + 2-layer MLP (hidden 256)",
         "domain": "router",
         "description": (
-            "Domain router classifies your prompt over 32 domains and forwards "
+            "Domain router classifies your prompt over 47 domains and forwards "
             "to the best specialist. Trained on the AI-Act-traceable clean "
-            "corpus (router v0.3, 2026-05-11). Hardware domains (kicad / spice / "
-            "stm32 / emc / embedded / power) route to the mascarade LoRA "
-            "specialists with a sandboxed Docker validator. Generalist domains "
-            "(math, code, multilingual, raisonnement) route directly. The "
-            "decision is shown above each reply in the playground."
+            "corpus (router v9, 2026-05-30). Hardware/EDA domains (kicad / "
+            "spice / stm32 / emc / embedded / power) route to the qwen36 "
+            "multi-LoRA specialists with a sandboxed Docker validator. "
+            "Generalist domains (math, code, multilingual, raisonnement) route "
+            "directly. The decision is shown above each reply in the playground."
         ),
-        "headline": "MiniLM 384d · 40 domains · top1≈65% top3≈86% · chain v0.3",
+        "headline": "all-MiniLM-L6-v2 384d · 47 domains · macro-F1 0.889 · router v9",
         "parameters": 22_700_000,  # MiniLM L6 v2 ≈ 22.7M
         "disk_size_bytes": 90_500_000,
         "memory_gb": 0.2,
@@ -139,9 +162,9 @@ _LIVE_DETAILS: dict[str, dict] = {
         "architecture": "safetensors",
         "license": "apache-2.0",
         "kind": ModelKind.FINE_TUNED,
-        "hf_url": "https://huggingface.co/Ailiance-fr/router-v6-minilm",
-        "top_eval_score": 0.78,
-        "top_eval_benchmark": "iact-bench 31 domains avg",
+        "hf_url": "https://huggingface.co/Ailiance-fr",
+        "top_eval_score": 0.889,
+        "top_eval_benchmark": "iact-bench 47 domains macro-F1",
     },
     "ailiance/granite-30b": {
         "display_name": "Granite 4.1 30B Instruct",
@@ -150,16 +173,15 @@ _LIVE_DETAILS: dict[str, dict] = {
         "description": (
             "IBM Granite 4.1 30B Instruct — code-first instruction-tuned "
             "open model with strong enterprise SQL / RAG / tool-use scores. "
-            "Q4_K_M GGUF served by llama.cpp on kxkm-ai RTX 4090 via autossh "
-            "tunnel (electron-server :8003)."
+            "MLX-served by the omlx server on Mac Studio (:8500)."
         ),
-        "headline": "30B · Q4_K_M · RTX 4090 (kxkm-ai)",
+        "headline": "30B · MLX · omlx (Mac Studio)",
         "parameters": 30_000_000_000,
         "disk_size_bytes": 18 * _GIB,
         "memory_gb": 20.0,
-        "quantization": "Q4_K_M",
-        "host": "kxkm-ai (NVIDIA RTX 4090, autossh tunnel)",
-        "architecture": "gguf",
+        "quantization": "MLX",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+        "architecture": "mlx",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
         # ibm-granite/granite-4.1-30B-instruct is gated. Point to the org.
@@ -167,47 +189,48 @@ _LIVE_DETAILS: dict[str, dict] = {
         "top_eval_score": 0.83,
         "top_eval_benchmark": "HumanEval+ / BigBench-Hard code",
     },
-    "ailiance/ministral-14b": {
-        "display_name": "Ministral 3 14B Instruct",
-        "base_model": "mistralai/Ministral-3-14B-Instruct-2512",
+    "ailiance/devstral-base": {
+        "display_name": "Devstral Small 2 24B",
+        "base_model": "mistralai/Devstral-Small-2-24B",
+        "domain": "code",
+        "description": (
+            "Mistral Devstral Small 2 24B — agentic coding base. Now served "
+            "by the omlx server on Mac Studio (:8500); the old macm1 :9302 "
+            "Devstral worker is decommissioned."
+        ),
+        "headline": "24B · MLX · omlx (Mac Studio)",
+        "parameters": 24_000_000_000,
+        "disk_size_bytes": 14 * _GIB,
+        "memory_gb": 15.0,
+        "quantization": "MLX",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+        "architecture": "mlx",
+        "license": "apache-2.0",
+        "kind": ModelKind.QUANTIZED,
+        "hf_url": "https://huggingface.co/mistralai",
+        "top_eval_score": 0.84,
+        "top_eval_benchmark": "SWE-bench Verified",
+    },
+    "ailiance/mixtral-8x22b": {
+        "display_name": "Mixtral 8x22B",
+        "base_model": "mistralai/Mixtral-8x22B-Instruct-v0.1",
         "domain": "general",
         "description": (
-            "Mistral Ministral 3 14B Instruct — small, fast generalist for "
-            "FR/EN chat. MLX 4-bit on macM1 :8502."
+            "Mistral Mixtral 8x22B sparse MoE generalist. MLX-served by the "
+            "omlx server on Mac Studio (:8500)."
         ),
-        "headline": "14B · MLX 4-bit · macM1",
-        "parameters": 14_000_000_000,
-        "disk_size_bytes": 8 * _GIB,
-        "memory_gb": 9.0,
-        "quantization": "MLX 4-bit",
-        "host": "macm1 (Apple M1)",
+        "headline": "8x22B MoE · MLX · omlx (Mac Studio)",
+        "parameters": 141_000_000_000,
+        "disk_size_bytes": 80 * _GIB,
+        "memory_gb": 85.0,
+        "quantization": "MLX",
+        "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
         "architecture": "mlx",
         "license": "apache-2.0",
         "kind": ModelKind.QUANTIZED,
-        "hf_url": "https://huggingface.co/mistralai/Ministral-3-14B-Instruct-2512",
-        "top_eval_score": 0.78,
-        "top_eval_benchmark": "MT-Bench-FR",
-    },
-    "ailiance/ministral-14b-reasoning": {
-        "display_name": "Ministral 3 14B Reasoning",
-        "base_model": "mistralai/Ministral-3-14B-Reasoning-2512",
-        "domain": "reasoning",
-        "description": (
-            "Ministral 3 14B with reasoning fine-tune — chain-of-thought "
-            "responses for math and complex problem-solving. MLX 4-bit on macM1."
-        ),
-        "headline": "14B reasoning · MLX 4-bit · macM1",
-        "parameters": 14_000_000_000,
-        "disk_size_bytes": 8 * _GIB,
-        "memory_gb": 9.0,
-        "quantization": "MLX 4-bit",
-        "host": "macm1 (Apple M1)",
-        "architecture": "mlx",
-        "license": "apache-2.0",
-        "kind": ModelKind.QUANTIZED,
-        "hf_url": "https://huggingface.co/mistralai/Ministral-3-14B-Reasoning-2512",
-        "top_eval_score": 0.85,
-        "top_eval_benchmark": "MATH / GSM8K",
+        "hf_url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
+        "top_eval_score": 0.79,
+        "top_eval_benchmark": "MMLU",
     },
 }
 
@@ -262,9 +285,14 @@ _LIVE_DETAILS["ailiance/pixtral-12b"] = {
     "display_name": "Pixtral 12B (vision)",
     "base_model": "mistralai/Pixtral-12B",
     "domain": "vision",
-    "description": "Mistral Pixtral 12B multimodal — texte + image.",
-    "headline": "vision · 12B",
-    "host": "studio",
+    "description": (
+        "Mistral Pixtral 12B multimodal — texte + image. Worker vision "
+        "canonique, servi par le serveur omlx sur Mac Studio (:8500). "
+        "Gemma 4 E4B sert de fallback vision léger."
+    ),
+    "headline": "vision · 12B · omlx (Mac Studio)",
+    "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+    "architecture": "mlx",
     "license": "apache-2.0",
     "kind": ModelKind.QUANTIZED,
     "hf_url": "https://huggingface.co/mistralai/Pixtral-12B-2409",
@@ -273,11 +301,15 @@ _LIVE_DETAILS["ailiance/pixtral-12b"] = {
 }
 _LIVE_DETAILS["ailiance/reasoning-r1"] = {
     "display_name": "Reasoning R1",
-    "base_model": "DeepSeek-R1 distilled",
+    "base_model": "DeepSeek-R1-Distill-Qwen-32B",
     "domain": "reasoning",
-    "description": "Modèle de raisonnement chain-of-thought (DeepSeek-R1 distill ou équivalent).",
-    "headline": "chain-of-thought · reasoning",
-    "host": "macm1",
+    "description": (
+        "Modèle de raisonnement chain-of-thought (DeepSeek-R1 distill 32B). "
+        "Servi par le serveur omlx sur Mac Studio (:8500)."
+    ),
+    "headline": "chain-of-thought · reasoning · omlx (Mac Studio)",
+    "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+    "architecture": "mlx",
     "license": "apache-2.0",
     "kind": ModelKind.DISTILLED,
     "hf_url": "https://huggingface.co/deepseek-ai",
@@ -286,14 +318,18 @@ _LIVE_DETAILS["ailiance/reasoning-r1"] = {
 }
 _LIVE_DETAILS["ailiance/coder-pro"] = {
     "display_name": "Coder Pro",
-    "base_model": "Qwen2.5-Coder-32B-Instruct ou équivalent",
+    "base_model": "Qwen3-Coder-30B-A3B-Instruct",
     "domain": "code",
-    "description": "Spécialiste code généraliste avec validators iact-bench (tsc, ruff, rustc, go vet).",
-    "headline": "code · validators",
-    "host": "macm1",
+    "description": (
+        "Spécialiste code généraliste avec validators iact-bench (tsc, ruff, "
+        "rustc, go vet). Servi par le serveur omlx sur Mac Studio (:8500)."
+    ),
+    "headline": "code · validators · omlx (Mac Studio)",
+    "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+    "architecture": "mlx",
     "license": "apache-2.0",
     "kind": ModelKind.QUANTIZED,
-    "hf_url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
+    "hf_url": "https://huggingface.co/Qwen",
     "top_eval_score": 0.86,
     "top_eval_benchmark": "HumanEval+ / MultiPL-E",
 }
@@ -301,9 +337,13 @@ _LIVE_DETAILS["ailiance/mistral-small-3.5"] = {
     "display_name": "Mistral Small 3.5",
     "base_model": "mistralai/Mistral-Small-3.5-24B-Instruct",
     "domain": "general",
-    "description": "Mistral Small 3.5 24B — généraliste rapide, alternative légère au Medium.",
-    "headline": "24B · général · fast",
-    "host": "studio",
+    "description": (
+        "Mistral Small 3.5 24B — généraliste rapide, alternative légère au "
+        "Medium. Servi par le serveur omlx sur Mac Studio (:8500)."
+    ),
+    "headline": "24B · général · fast · omlx (Mac Studio)",
+    "host": "studio (omlx :8500, Mac Studio M3 Ultra)",
+    "architecture": "mlx",
     "license": "apache-2.0",
     "kind": ModelKind.QUANTIZED,
     "hf_url": "https://huggingface.co/mistralai",
@@ -312,26 +352,25 @@ _LIVE_DETAILS["ailiance/mistral-small-3.5"] = {
 }
 
 _LIVE_DETAILS["ailiance/mascarade"] = {
-    "display_name": "Mascarade · 12 LoRAs spécialistes",
-    "base_model": "ailiance/Qwen3-4B + LoRA",
+    "display_name": "Mascarade · LoRAs spécialistes qwen36",
+    "base_model": "Qwen3.6-35B-A3B + LoRA",
     "domain": "hardware-specialists",
     "description": (
-        "Famille de 12 adaptateurs LoRA fine-tunés (r=16, α=32) sur le "
-        "modèle de base ailiance/Qwen3-4B. Chacun est servi par Ollama sur "
-        "Tower (NVIDIA Quadro P2000) via le tunnel autossh "
-        "electron-server :8004 → tower:11434. L'auto-router classifie le "
-        "domaine du prompt et délègue au spécialiste correspondant, puis "
-        "fait passer la sortie dans un validator Docker sandboxé. La fiche "
-        "détaillée liste les 12 spécialistes avec leur domaine, leur "
-        "nombre de steps d'entraînement et leur validator dédié."
+        "Famille d'adaptateurs LoRA fine-tunés (curriculum) sur le modèle de "
+        "base Qwen3.6-35B-A3B. Servis par deux instances multi-LoRA sur Mac "
+        "Studio (:9360 hardware/EDA/math, :9361 code/web/lang) avec hot-swap "
+        "des 30 adaptateurs. L'auto-router classifie le domaine du prompt et "
+        "délègue au spécialiste correspondant, puis fait passer la sortie "
+        "dans un validator Docker sandboxé. La fiche détaillée liste les "
+        "spécialistes avec leur domaine et leur validator dédié."
     ),
-    "headline": "ailiance/Qwen3-4B + 12 LoRAs · Tower Ollama :8004 · validator sandbox",
-    "parameters": 4_000_000_000,
-    "disk_size_bytes": 12 * 3 * _GIB,  # 12 LoRAs × ~3 GB GGUF each
-    "memory_gb": 3.5,
-    "quantization": "Q4_K_M LoRA",
-    "host": "tower (NVIDIA Quadro P2000 5 GB)",
-    "architecture": "gguf",
+    "headline": "Qwen3.6-35B + LoRAs · multi-LoRA :9360/:9361 (Mac Studio) · validator sandbox",
+    "parameters": 35_000_000_000,
+    "disk_size_bytes": 70 * _GIB,
+    "memory_gb": 70.0,
+    "quantization": "MLX bf16 + LoRA",
+    "host": "studio (multi-LoRA :9360/:9361, Mac Studio M3 Ultra)",
+    "architecture": "mlx",
     "license": "apache-2.0",
     "kind": ModelKind.LORA,
 }

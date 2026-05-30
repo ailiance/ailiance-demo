@@ -254,8 +254,9 @@ function ModelDetailPage() {
               >
                 Toutes les adapters partagent le même modèle de base{' '}
                 <code style={{ fontFamily: 'var(--mono)', fontSize: 12 }}>ailiance/Qwen3-4B</code>{' '}
-                avec LoRA r=16 / α=32. Servies par Ollama sur Tower (NVIDIA Quadro P2000) via le
-                tunnel autossh electron-server :8004.
+                avec LoRA r=16 / α=32. Famille publiée sur HuggingFace ; le routage live est
+                désormais assuré par les adaptateurs qwen36-35B servis sur Mac Studio (:9360 /
+                :9361).
               </p>
               <div
                 style={{
@@ -357,8 +358,8 @@ function ModelDetailPage() {
                   margin: '0 0 16px',
                 }}
               >
-                Sur les domaines hardware/code, l'auto-router délègue à un des 12 spécialistes
-                mascarade (LoRA Qwen3-4B sur Tower Ollama :8004).
+                Sur les domaines hardware/code, l'auto-router délègue à un des 30 adaptateurs
+                spécialistes qwen36-35B servis sur Mac Studio (:9360 / :9361).
               </p>
               <div
                 style={{
