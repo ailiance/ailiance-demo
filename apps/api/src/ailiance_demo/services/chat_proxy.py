@@ -18,35 +18,23 @@ ALIAS_TO_GATEWAY_MODEL: dict[str, str] = {
     # gateway fall through to its domain router, which produced garbled output
     # in tests because the request reaches a worker that doesn't recognize the
     # model id and degenerates.
-    # --- generalist base models served by the gateway ---
-    "ailiance/mistral-medium-3.5-128b": "ailiance-mistral",
-    "ailiance/gemma4-e4b-curriculum": "ailiance-gemma4",
-    "ailiance/gemma3-4b": "ailiance-gemma",
-    "ailiance/qwen3-next-80b-a3b-instruct": "ailiance-qwen",
+    # --- generalist base models served by the omlx consolidated server ---
+    "ailiance/mistral-medium-3.5-128b": "ailiance-mistral-medium",
+    "ailiance/gemma4-e4b-curriculum": "ailiance-gemma4-omlx",
+    "ailiance/qwen3-coder-next-80b": "ailiance-qwen36",
     "ailiance/granite-30b": "ailiance-granite",
-    "ailiance/ministral-14b": "ailiance-ministral",
-    "ailiance/ministral-14b-reasoning": "ailiance-ministral-reasoning",
+    "ailiance/eurollm-22b": "ailiance-eurollm",
+    "ailiance/apertus-70b": "ailiance-apertus",
     # --- additional gateway-exposed flagship / variant aliases ---
     "ailiance/pixtral-12b": "ailiance-pixtral",
     "ailiance/reasoning-r1": "ailiance-reasoning-r1",
     "ailiance/coder-pro": "ailiance-coder-pro",
     "ailiance/mistral-small-3.5": "ailiance-mistral-small",
+    "ailiance/devstral-base": "ailiance-devstral-base",
+    "ailiance/mixtral-8x22b": "ailiance-mixtral-8x22b",
     # --- mascarade family card routes to auto-router (auto-classifies which
-    # mascarade specialist to use) ---
+    # qwen36 LoRA specialist to use) ---
     "ailiance/mascarade": "ailiance",
-    # --- mascarade hardware specialists (Qwen3-4B LoRA on Tower :8004) ---
-    "ailiance/mascarade-kicad": "ailiance-kicad",
-    "ailiance/mascarade-spice": "ailiance-spice",
-    "ailiance/mascarade-stm32": "ailiance-stm32",
-    "ailiance/mascarade-emc": "ailiance-emc",
-    "ailiance/mascarade-embedded": "ailiance-embedded",
-    "ailiance/mascarade-platformio": "ailiance-platformio",
-    "ailiance/mascarade-freecad": "ailiance-freecad",
-    "ailiance/mascarade-dsp": "ailiance-dsp",
-    "ailiance/mascarade-iot": "ailiance-iot",
-    "ailiance/mascarade-power": "ailiance-power",
-    "ailiance/mascarade-components-review": "ailiance-components-review",
-    "ailiance/mascarade-coder": "ailiance-coder",
     # The bare "ailiance" alias triggers the gateway's domain router
     # (MiniLM L6 v2 embeddings + MLP classifier) — not in MODEL_FORCE_MAP on
     # purpose. We surface the decision in the chat stream via a route
@@ -55,12 +43,13 @@ ALIAS_TO_GATEWAY_MODEL: dict[str, str] = {
 }
 
 # Worker port → human-readable label, used for the route preamble.
+# Serving is consolidated onto the omlx multi-model server (:8500) plus the
+# two qwen36 multi-LoRA instances (:9360 / :9361), all on Mac Studio. The old
+# per-port workers (9301/9303/9304/8002) are decommissioned.
 _PORT_LABELS: dict[int, str] = {
-    9301: "Mistral Medium 3.5 128B (studio)",
-    8502: "Gemma 4 E4B + ailiance curriculum LoRA (macm1)",
-    9303: "EuroLLM 22B (studio)",
-    9304: "Gemma 3 4B (tower)",
-    8002: "Qwen3.5 35B (kxkm-ai)",
+    8500: "omlx multi-model server (studio)",
+    9360: "Qwen3.6-35B multi-LoRA · hardware/EDA/math (studio)",
+    9361: "Qwen3.6-35B multi-LoRA · code/web/lang (studio)",
 }
 AILIANCE_ALIASES: frozenset[str] = frozenset(ALIAS_TO_GATEWAY_MODEL)
 

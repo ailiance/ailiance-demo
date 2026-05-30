@@ -18,173 +18,64 @@ from ailiance_demo.models.status import RouterStats, WorkerStatus
 
 log = structlog.get_logger()
 
+# Serving is consolidated onto Mac Studio (M3 Ultra). Three live endpoints:
+#   - omlx :8500     — multi-model server (Mistral-Medium, DeepSeek-R1,
+#                      Qwen3-Coder-30B/Next-80B, EuroLLM, granite, Mixtral,
+#                      Pixtral, gemma-4, Devstral, ...)
+#   - qwen36 :9360   — Qwen3.6-35B multi-LoRA, hardware/EDA/math specialists
+#   - qwen36 :9361   — Qwen3.6-35B multi-LoRA, code/web/lang specialists
+# The old per-port workers (studio:9301/9323/9325/9326/9327/9330,
+# macm1:8502/9302, tower:9304/8004, kxkm-ai:8002/8003) are decommissioned.
 WORKERS = [
-    # --- Studio (M3 Ultra, 512 GB unified) ---
     {
-        "id": "studio-mistral-medium",
-        "label": "Mac Studio · Mistral-Medium-128B :9301",
-        "url": "http://studio:9301",
-        "host": "studio",
-        "gpu": "Apple M3 Ultra (76-core GPU)",
-        "vram_gb": 512.0,
-        "tdp_w": 215,
-        "gateway_aliases": ["ailiance-mistral", "ailiance-mistral-medium"],
-        "served_models": ["Mistral-Medium-3.5-128B-MLX-Q8"],
-    },
-    {
-        "id": "studio-reasoning-r1",
-        "label": "Mac Studio · DeepSeek-R1 :9323",
-        "url": "http://studio:9323",
-        "host": "studio",
-        "gpu": "Apple M3 Ultra (76-core GPU)",
-        "vram_gb": 512.0,
-        "tdp_w": 215,
-        "gateway_aliases": ["ailiance-reasoning-r1"],
-        "served_models": ["DeepSeek-R1-Distill-Qwen-32B-MLX-4bit"],
-    },
-    {
-        "id": "studio-pixtral",
-        "label": "Mac Studio · Pixtral-12B :9325",
-        "url": "http://studio:9325",
-        "host": "studio",
-        "gpu": "Apple M3 Ultra (76-core GPU)",
-        "vram_gb": 512.0,
-        "tdp_w": 215,
-        "gateway_aliases": ["ailiance-pixtral"],
-        "served_models": ["Pixtral-12B-MLX-4bit"],
-    },
-    {
-        "id": "studio-mistral-small",
-        "label": "Mac Studio · Mistral-Small-24B :9326",
-        "url": "http://studio:9326",
-        "host": "studio",
-        "gpu": "Apple M3 Ultra (76-core GPU)",
-        "vram_gb": 512.0,
-        "tdp_w": 215,
-        "gateway_aliases": ["ailiance-mistral-small"],
-        "served_models": ["Mistral-Small-3.1-24B-Instruct-MLX-4bit"],
-    },
-    {
-        "id": "studio-coder-pro",
-        "label": "Mac Studio · Qwen3-Coder-30B :9327",
-        "url": "http://studio:9327",
-        "host": "studio",
-        "gpu": "Apple M3 Ultra (76-core GPU)",
-        "vram_gb": 512.0,
-        "tdp_w": 215,
-        "gateway_aliases": ["ailiance-coder-pro"],
-        "served_models": ["Qwen3-Coder-30B-A3B-Instruct-MLX-4bit"],
-    },
-    {
-        "id": "studio-devstral-multi",
-        "label": "Mac Studio · Devstral multi-LoRA :9330",
-        "url": "http://studio:9330",
+        "id": "studio-omlx",
+        "label": "Mac Studio · omlx multi-model :8500",
+        "url": "http://100.116.92.12:8500",
         "host": "studio",
         "gpu": "Apple M3 Ultra (76-core GPU)",
         "vram_gb": 512.0,
         "tdp_w": 215,
         "gateway_aliases": [
-            "ailiance-devstral-base", "ailiance-python", "ailiance-cpp",
-            "ailiance-rust-emb", "ailiance-html", "ailiance-ml-training",
-        ],
-        "served_models": ["Devstral-Small-2-24B-MLX-4bit + 5 LoRA hot-swap"],
-    },
-    # --- macM1 (M1, 32 GB) ---
-    {
-        "id": "macm1-mlx",
-        "label": "macM1 · mlx_lm.server :8502",
-        "url": "http://macm1:8502",
-        "host": "macm1",
-        "gpu": "Apple M1 (8-core GPU)",
-        "vram_gb": 32.0,
-        "tdp_w": 30,
-        # ailiance-granite is NOT here: the gateway force-maps that alias to
-        # kxkm-ai :8003, not macM1. macM1 hosts a granite-4.1-30b model but
-        # the gateway never routes the alias to it.
-        "gateway_aliases": [
-            "ailiance-gemma2", "ailiance-gemma4", "ailiance-ministral",
-            "ailiance-ministral-reasoning",
+            "ailiance-mistral-medium", "ailiance-mistral", "ailiance-eurollm",
+            "ailiance-apertus", "ailiance-gemma", "ailiance-granite",
+            "ailiance-devstral-base", "ailiance-flagship", "ailiance-qwen-235b",
+            "ailiance-reasoning-r1", "ailiance-llama", "ailiance-pixtral",
+            "ailiance-gemma4-omlx", "ailiance-mistral-small", "ailiance-coder-pro",
+            "ailiance-mixtral", "ailiance-mixtral-8x22b",
         ],
         "served_models": [
-            "gemma-4-E4B-it-MLX-4bit",
-            "Ministral-3-14B-Instruct-2512-4bit",
-            "Ministral-3-14B-Reasoning-2512-4bit",
+            "Mistral-Medium-3.5-128B-MLX-Q8",
+            "DeepSeek-R1-Distill-Qwen-32B",
+            "Qwen3-Coder-30B-A3B", "Qwen3-Coder-Next-8bit (80B MoE)",
+            "EuroLLM-22B", "granite-4.1-30b", "Mixtral-8x22B",
+            "Devstral-Small-2-24B", "Pixtral-12B", "gemma-4-E4B",
         ],
     },
-    # --- Tower (NVIDIA Quadro P2000, 5 GB) ---
     {
-        "id": "tower-gemma",
-        "label": "Tower · llama.cpp Gemma 3 :9304",
-        "url": "http://tower:9304",
-        "host": "tower (NVIDIA Quadro P2000)",
-        "gpu": "NVIDIA Quadro P2000",
-        "vram_gb": 5.0,
-        "tdp_w": 75,
-        "gateway_aliases": ["ailiance-gemma"],
-        "served_models": ["gemma-3-4b-it (Q4 GGUF)"],
+        "id": "studio-qwen36-hardware",
+        "label": "Mac Studio · Qwen3.6-35B multi-LoRA (hardware/EDA/math) :9360",
+        "url": "http://100.116.92.12:9360",
+        "host": "studio",
+        "gpu": "Apple M3 Ultra (76-core GPU)",
+        "vram_gb": 512.0,
+        "tdp_w": 215,
+        "gateway_aliases": ["ailiance-qwen36"],
+        "served_models": ["Qwen3.6-35B-A3B-MLX-BF16 + 30 LoRA hot-swap"],
     },
     {
-        # The 10 hardware mascarade aliases (kicad/spice/stm32/emc/embedded/
-        # platformio/freecad/dsp/iot/power) moved to the Studio MLX worker
-        # :9340 with PR #100/#102. Tower Ollama now only backs the two
-        # aliases the gateway still force-maps to :8004, plus the embed
-        # surface.
-        "id": "tower-ollama",
-        "label": "Tower · Ollama mascarade :8004",
-        "url": "http://host.docker.internal:8004",
-        "host": "tower (autossh tunnel)",
-        "gpu": "NVIDIA Quadro P2000",
-        "vram_gb": 5.0,
-        "tdp_w": 75,
-        "gateway_aliases": [
-            "ailiance-components-review", "ailiance-coder", "ailiance-embed",
-        ],
-        "served_models": [
-            "mascarade-components-review", "mascarade-coder-v2", "bge-m3",
-        ],
-    },
-    # --- Studio (M3 Ultra) MLX bf16 mascarade experts ---
-    {
-        "id": "studio-mascarade",
-        "label": "Mac Studio · MLX mascarade :9340",
-        "url": "http://host.docker.internal:9340",
-        "host": "studio (autossh tunnel)",
+        "id": "studio-qwen36-code",
+        "label": "Mac Studio · Qwen3.6-35B multi-LoRA (code/web/lang) :9361",
+        "url": "http://100.116.92.12:9361",
+        "host": "studio",
         "gpu": "Apple M3 Ultra (76-core GPU)",
         "vram_gb": 512.0,
         "tdp_w": 215,
         "gateway_aliases": [
-            "ailiance-kicad", "ailiance-spice", "ailiance-stm32", "ailiance-emc",
-            "ailiance-embedded", "ailiance-platformio", "ailiance-freecad",
-            "ailiance-dsp", "ailiance-iot", "ailiance-power",
+            "ailiance-python", "ailiance-cpp", "ailiance-rust-emb",
+            "ailiance-html", "ailiance-ml-training",
+            "ailiance-components-review", "ailiance-coder",
         ],
-        "served_models": [
-            "mascarade-kicad", "mascarade-spice", "mascarade-stm32",
-            "mascarade-emc", "mascarade-embedded", "mascarade-platformio",
-            "mascarade-freecad", "mascarade-dsp", "mascarade-iot", "mascarade-power",
-        ],
-    },
-    # --- kxkm-ai (RTX 4090, 24 GB) ---
-    {
-        "id": "kxkm-qwen",
-        "label": "kxkm-ai · llama.cpp Qwen3-Next 80B :8002",
-        "url": "http://host.docker.internal:8002",
-        "host": "kxkm-ai (RTX 4090, autossh tunnel)",
-        "gpu": "NVIDIA RTX 4090",
-        "vram_gb": 24.0,
-        "tdp_w": 450,
-        "gateway_aliases": ["ailiance-qwen"],
-        "served_models": ["Qwen3-Next-80B-A3B-Instruct (Q4_K_M MoE)"],
-    },
-    {
-        "id": "kxkm-granite",
-        "label": "kxkm-ai · llama.cpp Granite 30B :8003",
-        "url": "http://host.docker.internal:8003",
-        "host": "kxkm-ai (RTX 4090, autossh tunnel)",
-        "gpu": "NVIDIA RTX 4090",
-        "vram_gb": 24.0,
-        "tdp_w": 450,
-        "gateway_aliases": ["ailiance-granite"],
-        "served_models": ["granite-4.1-30b-instruct (Q4_K_M)"],
+        "served_models": ["Qwen3.6-35B-A3B-MLX-BF16 + 30 LoRA hot-swap"],
     },
 ]
 
@@ -196,10 +87,9 @@ AVG_TOKENS_PER_REQUEST = 280
 # `nvidia-smi` (Linux/NVIDIA) or `ioreg` (Apple Silicon). The api container
 # has openssh-client and /root/.ssh mounted RO from /home/electron/.ssh.
 _HOST_PROBES: dict[str, dict[str, str]] = {
+    # Serving consolidated onto Mac Studio — the other physical hosts no
+    # longer serve LLM workers, so we only probe studio's GPU.
     "studio": {"ssh": "studio", "kind": "apple"},
-    "macm1": {"ssh": "electron@macm1", "kind": "apple"},
-    "tower": {"ssh": "clems@tower", "kind": "nvidia"},
-    "kxkm-ai": {"ssh": "kxkm@10.2.0.237", "kind": "nvidia"},
 }
 
 
@@ -592,8 +482,8 @@ async def fetch_workers_status(gateway_url: str) -> list[WorkerStatus]:
             request_counts = await _fetch_gateway_request_counts(client, gateway_url)
             host_probes = await _gather_host_probes()
             # Probe all workers in parallel to bound total latency to
-            # ~max(probe), not sum(probe). 11 workers * 300 ms sequential
-            # = 3.3 s -> ~500 ms. Fixes "probe indisponible" on cockpit.
+            # ~max(probe), not sum(probe). Keeps the cockpit page render
+            # fast and fixes "probe indisponible".
             return list(
                 await asyncio.gather(
                     *(_probe_one(client, w, request_counts, host_probes) for w in WORKERS)

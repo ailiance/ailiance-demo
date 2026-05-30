@@ -18,10 +18,9 @@ interface Props {
 // Worker-side payloads remain capped by their own context window; this is
 // only a Playground UX default. Power users can override via ParamsPanel.
 const REASONING_ALIASES = new Set([
-  'ailiance-gemma2',
   'ailiance-reasoning-r1',
-  'ailiance-ministral-reasoning',
-  'ailiance-apertus-math-reasoning',
+  'ailiance-qwen-235b',
+  'ailiance-qwen36',
 ]);
 
 const DEFAULT_MAX_TOKENS = 1024;

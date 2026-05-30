@@ -68,21 +68,17 @@ def test_workers_constant_matches_production_fleet():
     """The hard-coded WORKERS list is the single source of truth for /status."""
     from ailiance_demo.services.gateway_probe import WORKERS
 
+    # Serving is consolidated onto Mac Studio: the omlx multi-model server
+    # (:8500) plus the two Qwen3.6-35B multi-LoRA instances (:9360 hardware/
+    # EDA/math, :9361 code/web/lang). The old per-port / multi-host fleet
+    # (studio:9301/9323/.., macm1, tower, kxkm-ai) is decommissioned.
     ids = {w["id"] for w in WORKERS}
     assert ids == {
-        "studio-mistral-medium", "studio-reasoning-r1", "studio-pixtral",
-        "studio-mistral-small", "studio-coder-pro", "studio-devstral-multi",
-        "studio-mascarade", "macm1-mlx", "tower-gemma", "tower-ollama",
-        "kxkm-qwen", "kxkm-granite",
+        "studio-omlx", "studio-qwen36-hardware", "studio-qwen36-code",
     }
     by_id = {w["id"]: w for w in WORKERS}
-    # kxkm-*, tower-ollama and studio-mascarade reach the cockpit via autossh
-    # tunnels owned by the gateway host; from inside the api container we must
-    # talk to host.docker.internal.
-    assert "host.docker.internal" in by_id["kxkm-qwen"]["url"]
-    assert "host.docker.internal" in by_id["kxkm-granite"]["url"]
-    assert "host.docker.internal" in by_id["tower-ollama"]["url"]
-    assert "host.docker.internal" in by_id["studio-mascarade"]["url"]
-    # Other workers are addressed over Tailscale magic DNS.
-    assert by_id["studio-mistral-medium"]["url"] == "http://studio:9301"
-    assert by_id["tower-gemma"]["url"] == "http://tower:9304"
+    # All three workers live on Mac Studio, reached over Tailscale by IP.
+    assert by_id["studio-omlx"]["url"] == "http://100.116.92.12:8500"
+    assert by_id["studio-qwen36-hardware"]["url"] == "http://100.116.92.12:9360"
+    assert by_id["studio-qwen36-code"]["url"] == "http://100.116.92.12:9361"
+    assert all(w["host"] == "studio" for w in WORKERS)

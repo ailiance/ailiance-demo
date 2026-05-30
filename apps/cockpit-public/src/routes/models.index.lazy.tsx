@@ -9,7 +9,7 @@ export const Route = createLazyFileRoute('/models/')({
   component: ModelsPage,
 });
 
-// Bench origine vs tuné — extrait iact-bench v0.2.0. À remplacer par fetch /api/public/bench plus tard.
+// Bench origine vs tuné — extrait iact-bench v1. À remplacer par fetch /api/public/bench plus tard.
 const BENCH = [
   { domain: 'KiCad DSL', origin: 12, tuned: 67, model: 'ailiance/auto' },
   { domain: 'KiCad PCB', origin: 18, tuned: 60, model: 'ailiance/auto' },
@@ -190,7 +190,7 @@ function ModelsPage() {
         <div className="block-head">
           <h2>L'auto-router, par domaine.</h2>
           <p className="lede">
-            Le prompt entre. Un classifier embeddings le situe sur l'un des 32 domaines. Le routeur
+            Le prompt entre. Un classifier embeddings le situe sur l'un des 47 domaines. Le routeur
             ouvre la politique YAML correspondante et choisit le spécialiste. Sur les domaines
             hardware, la sortie passe par un validator Docker sandboxé avant retour utilisateur.
           </p>
@@ -206,8 +206,8 @@ function ModelsPage() {
           <RouterArrow label="POST /api/public/chat" />
           <RouterStep
             num="2"
-            title="Classifier MiniLM L6 v2 + MLP"
-            sub="MiniLM L6 v2 384d · 40 domaines prédits · cache L1 hash + L2 cosinus sémantique"
+            title="Classifier MiniLM-L6-v2 + MLP"
+            sub="MiniLM-L6-v2 384d · MLP 2 couches (hidden 256) · 47 domaines · cache L1 hash + L2 cosinus sémantique"
             tone="accent"
             chips={['kicad', 'spice', 'stm32', 'emc', 'embedded', 'code', 'math', '…']}
           />
@@ -219,8 +219,8 @@ function ModelsPage() {
               </span>
               <RouterStep
                 num="3a"
-                title="Spécialiste mascarade-*"
-                sub="LoRA Qwen3-4B fine-tunée sur le domaine (kicad / spice / stm32 / emc / embedded / power…) · Tower Ollama :8004"
+                title="Spécialiste qwen36-*"
+                sub="LoRA qwen36-35B hot-swap fine-tunée sur le domaine (kicad / spice / stm32 / emc / embedded / power…) · serveurs multi-LoRA :9360 / :9361"
                 tone="hardware"
               />
               <RouterArrow label="sortie LLM" small />
@@ -239,7 +239,7 @@ function ModelsPage() {
               <RouterStep
                 num="3b"
                 title="Backend généraliste"
-                sub="Apertus 70B (souverain) · Qwen3-Next 80B (raisonnement) · EuroLLM 22B (multilingue) · Devstral 24B (code) · Gemma 4 (fallback)"
+                sub="Mistral-Medium 128B · Qwen3-Coder-Next 80B (raisonnement) · EuroLLM 22B (multilingue) · Devstral-Small 24B (code) · Pixtral 12B (vision) — servis via omlx :8500"
                 tone="direct"
               />
               <RouterArrow label="sortie directe" small />
@@ -281,7 +281,7 @@ function ModelsPage() {
         <div className="fleet">
           <div className="fleet-head">
             <span className="live">
-              <span className="dot" /> gateway :9300 · router v0.3 · live probe
+              <span className="dot" /> gateway :9300 · router v9 · live probe
             </span>
             <span>
               {upCount} / {totalCount} healthy
@@ -429,7 +429,7 @@ function ModelsPage() {
             Bench — origine <em>vs</em> tuné.
           </h2>
           <p className="lede">
-            iact-bench v0.2.0, sandbox Docker épinglé par digest. Score = % cellules avec validator
+            iact-bench v1, sandbox Docker épinglé par digest. Score = % cellules avec validator
             exit-zéro. Origine = modèle base sans routage. Tuné = via auto-router + validator chain.
           </p>
         </div>

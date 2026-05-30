@@ -49,14 +49,16 @@ class Settings(BaseSettings):
     )
     dataset_flags_dir: Path = Path("/dataset-flags")
     machine_label: str = "studio"
+    # Serving is consolidated onto the omlx multi-model server (:8500) plus
+    # the two qwen36 multi-LoRA instances (:9360 / :9361), all on Mac Studio.
+    # The old per-port workers (9301/9303/9304, macm1:9302, kxkm-ai:8002) are
+    # decommissioned and no longer probed.
     workers_to_check: list[dict] = Field(
         default_factory=lambda: [
             {"name": "gateway", "url": "http://host.docker.internal:9300/health"},
-            {"name": "mistral-medium-3.5", "url": "http://studio:9301/health"},
-            {"name": "gemma4-e4b-curriculum", "url": "http://macm1:8502/health"},
-            {"name": "eurollm", "url": "http://studio:9303/health"},
-            {"name": "gemma3", "url": "http://tower:9304/health"},
-            {"name": "qwen3-next", "url": "http://host.docker.internal:8002/health"},
+            {"name": "omlx", "url": "http://100.116.92.12:8500/health"},
+            {"name": "qwen36-hardware", "url": "http://100.116.92.12:9360/health"},
+            {"name": "qwen36-code", "url": "http://100.116.92.12:9361/health"},
         ],
     )
 

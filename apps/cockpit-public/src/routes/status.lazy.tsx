@@ -145,7 +145,8 @@ const INCIDENTS = [
   { d: '06 mai', s: 'kxkm-ai', e: 'autossh restart · 4 min downtime', ok: false },
   { d: '01 mai', s: 'studio', e: 'MLX model reload · 2 min', ok: true },
   { d: '24 avril', s: 'tower', e: 'OS kernel panic, replaced PSU', ok: false },
-  { d: '12 avril', s: '—', e: 'router v0.3 shipped', ok: true },
+  { d: '29 mai', s: 'studio', e: 'serving consolidé sur omlx :8500', ok: true },
+  { d: '12 avril', s: '—', e: 'router v9 shipped', ok: true },
 ];
 
 function StatusPage() {
@@ -247,7 +248,7 @@ function StatusPage() {
             <span className="dot" />
             <div>
               <div className="name">auto-router</div>
-              <div className="sub">MiniLM v6 · classifier MLP</div>
+              <div className="sub">MiniLM-L6-v2 384d · classifier MLP</div>
             </div>
             <div>
               <div style={{ color: 'var(--ink)' }}>studio.tail</div>
@@ -281,7 +282,7 @@ function StatusPage() {
               814 h
             </div>
             <div style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--ink-3)' }}>
-              87.7% top-1
+              88.9% macro-F1
             </div>
             <StatusBadge ok={true} />
           </div>
@@ -312,11 +313,9 @@ function StatusPage() {
               }}
             >
               {`[gateway_probe.py] tick = ${30 - (tick % 30)}s
-  studio:9301      → 200 OK · 312 ms · apertus-70b loaded
-  macm1:9302       → 200 OK · 188 ms · devstral-24b loaded
-  studio:9303      → 200 OK · 224 ms · eurollm-22b loaded
-  tower:9304       → 200 OK · 92  ms · gemma3-4b loaded
-  kxkm-ai:8002     → 200 OK · 421 ms · qwen3-next-80b loaded  (via autossh tunnel)
+  studio:8500      → 200 OK · 224 ms · omlx multi-modèle (catalogue chargé)
+  studio:9360      → 200 OK · 188 ms · qwen36-35B multi-LoRA (hardware/EDA/math)
+  studio:9361      → 200 OK · 196 ms · qwen36-35B multi-LoRA (code/web/lang)
   ----
   cache age:       12 s
   next refresh:    ${30 - (tick % 30)} s`}

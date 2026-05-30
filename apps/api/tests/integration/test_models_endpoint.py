@@ -8,13 +8,14 @@ def test_list_models_returns_cards(client_with_cache: TestClient) -> None:
     assert response.status_code == 200
     cards = response.json()
     ids = {c["id"] for c in cards}
-    # Live workers + auto-router + 12 mascarade specialists + mocked HF entry.
+    # Live workers (omlx :8500 + qwen36 :9360/:9361) + auto-router +
+    # consolidated mascarade card + mocked HF entry.
     assert {
         "ailiance/mistral-medium-3.5-128b",
-        "ailiance/gemma3-4b",
-        "ailiance/qwen3-next-80b-a3b-instruct",
+        "ailiance/gemma4-e4b-curriculum",
+        "ailiance/qwen3-coder-next-80b",
         "ailiance/granite-30b",
-        "ailiance/ministral-14b",
+        "ailiance/eurollm-22b",
         "ailiance/mascarade",
         "ailiance/auto",
         "Ailiance-fr/micro-kiki-v3",

@@ -45,7 +45,7 @@ const ENTRIES: ProvenanceEntry[] = [
     license: 'Gemma Terms',
     provenanceUrl:
       'https://github.com/ailiance/ailiance/blob/main/docs/provenance/gemma-3-4b-it.json',
-    notes: 'Worker léger · NVIDIA Quadro P2000 5 GB',
+    notes: 'Servi via omlx :8500 · fallback vision léger (gemma-4-E4B)',
   },
   {
     alias: 'ailiance/qwen3-next-80b',
@@ -54,16 +54,16 @@ const ENTRIES: ProvenanceEntry[] = [
     license: 'Apache-2.0',
     provenanceUrl:
       'https://github.com/ailiance/ailiance/blob/main/docs/provenance/qwen3-next-80b-a3b-instruct.json',
-    notes: 'MoE 80B / 3B actif · RTX 4090 + RAM offload',
+    notes: 'MoE 80B / 3B actif · servi via omlx :8500 (Qwen3-Coder-Next-8bit)',
   },
   {
     alias: 'ailiance/auto',
-    base: 'MiniLM L6 v2 384d + 2-layer MLP + chain orchestrator',
+    base: 'MiniLM-L6-v2 384d + MLP 2 couches (hidden 256) + chain orchestrator',
     provider: 'Microsoft (MiniLM) + Ailiance software',
     license: 'Apache-2.0',
     provenanceUrl:
       'https://github.com/ailiance/ailiance/blob/main/docs/provenance/auto-router-minilm.json',
-    notes: 'Classifier 32 domaines · chain v0.3',
+    notes: 'Classifier 47 domaines (macro-F1 0,889) · chain v9',
   },
 ];
 
@@ -213,9 +213,15 @@ function TransparencyPage() {
               fichier de provenance
             </li>
             <li>
-              <strong>Validation pré-publication</strong> — iact-bench complet (31 domaines × 23
-              modèles) + sandbox Docker validators (g++, KiCad DRC/ERC, ngspice, shellcheck, tsc,
-              etc.) avec digests sha256 épinglés
+              <strong>Validation pré-publication</strong> — iact-bench complet (31 domaines × ≤23
+              modèles) + ~46 validators sur 3 backends : sandbox Docker (g++, KiCad DRC/ERC,
+              ngspice, shellcheck, tsc, etc.), kicad-mcp-pro et KiKit, avec digests sha256 épinglés
+            </li>
+            <li>
+              <strong>Jury LLM</strong> — le score LLM-judge d'iact-bench est calculé par
+              Qwen3-Coder-30B et EuroLLM-22B. Mistral-Small-3.1 est tenu à l'écart de l'usage
+              texte/jury en raison d'un bug connu du détokeniseur omlx (remonté en amont, contourné
+              en aval).
             </li>
             <li>
               <strong>Critères de release</strong> — gain mesurable sur le domaine cible vs base
@@ -314,10 +320,11 @@ function TransparencyPage() {
               </p>
               <p style={{ margin: '10px 0 0', color: 'var(--ink-3)', fontSize: 14 }}>
                 La sortie du modèle est <em>la seule entrée</em> du validator : pas d'exfiltration
-                de données, pas de fuite d'environnement. Douze validators stables aujourd'hui (g++,
-                arm-none-eabi-gcc, cargo embedded, shellcheck, tsc, ngspice, KiCad DRC/ERC, FreeCAD
-                scripting, html5lib strict, sqlglot, JSON/YAML). Dix validators EDA/MCAD
-                supplémentaires en v0.3.0.
+                de données, pas de fuite d'environnement. ~46 validators sur 3 backends aujourd'hui
+                — sandbox Docker (g++, arm-none-eabi-gcc, cargo embedded, shellcheck, tsc, ngspice,
+                KiCad DRC/ERC, FreeCAD scripting, html5lib strict, sqlglot, JSON/YAML, atopile,
+                KiKit DRC/fab…), kicad-mcp-pro (validators <code>kicad-pro-*</code> :
+                DRC/EMC/DFM/quality-gate) et KiKit headless.
               </p>
             </div>
           </div>

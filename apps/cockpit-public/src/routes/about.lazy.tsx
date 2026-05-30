@@ -37,25 +37,29 @@ function AboutPage() {
           <h2>Stack technique</h2>
           <ul>
             <li>
-              <strong>Entraînement</strong> — MLX bf16 LoRA sur Mistral Large 123B,
-              Qwen3.5-122B/35B, Apertus 70B, Devstral 24B, EuroLLM 22B
+              <strong>Entraînement</strong> — MLX bf16 LoRA sur Mistral-Medium 128B, Qwen3.6-35B,
+              Devstral-Small-2-24B, EuroLLM 22B, gemma-4-E4B
             </li>
             <li>
-              <strong>Routage</strong> — embeddings MiniLM L6 v2 384d + classifier MLP (40 domaines
-              prédits, 5 fallback) avec cache deux niveaux (L1 hash + L2 sémantique)
+              <strong>Routage</strong> — embeddings MiniLM-L6-v2 384d + classifier MLP 2 couches
+              (hidden 256, 47 domaines, macro-F1 0,889) avec cache deux niveaux (L1 hash + L2
+              sémantique). Jina v3 a été évalué puis écarté au bench (top-1 inférieur, encodage plus
+              lent).
             </li>
             <li>
-              <strong>Orchestration</strong> — <strong>router v0.3 Deliberation chain</strong> :
+              <strong>Orchestration</strong> — <strong>router v9 Deliberation chain</strong> :
               auto-engagé sur <code>model: "ailiance"</code> pour les domaines hardware / code, fait
               passer la sortie LLM dans un validator iact-bench sandboxé, retry avec feedback stderr
               en cas d'échec, émet NDJSON audit par chaîne
             </li>
             <li>
-              <strong>Serving</strong> — gateway FastAPI multi-worker, BF16, pool mémoire partagé
+              <strong>Serving</strong> — serveur omlx multi-modèle consolidé sur Mac Studio (port
+              8500) + deux instances qwen36-35B multi-LoRA, derrière la gateway FastAPI
             </li>
             <li>
-              <strong>Évaluation</strong> — Lighteval + EvalPlus + MT-Bench + iact-bench v0.2.0 (31
-              domaines × 23 modèles, 25 validators Docker sandboxés)
+              <strong>Évaluation</strong> — Lighteval + EvalPlus + MT-Bench + iact-bench v1 (31
+              domaines × ≤23 modèles, ~46 validators sur 3 backends : sandbox Docker, kicad-mcp-pro,
+              KiKit)
             </li>
           </ul>
 
@@ -116,7 +120,7 @@ function AboutPage() {
               >
                 ailiance
               </a>{' '}
-              — la gateway LLM elle-même (workers, router-v6, dossier EU AI Act).
+              — la gateway LLM elle-même (workers, router v9, dossier EU AI Act).
             </li>
             <li>
               <a
