@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TransparencyRouteImport } from './routes/transparency'
 import { Route as StatusRouteImport } from './routes/status'
+import { Route as FlotteRouteImport } from './routes/flotte'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as BenchRouteImport } from './routes/bench'
@@ -30,6 +31,11 @@ const StatusRoute = StatusRouteImport.update({
   path: '/status',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/status.lazy').then((d) => d.Route))
+const FlotteRoute = FlotteRouteImport.update({
+  id: '/flotte',
+  path: '/flotte',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
@@ -54,7 +60,7 @@ const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
-} as any)
+} as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 const ModelsIndexRoute = ModelsIndexRouteImport.update({
   id: '/models/',
   path: '/models/',
@@ -81,6 +87,7 @@ export interface FileRoutesByFullPath {
   '/bench': typeof BenchRoute
   '/catalog': typeof CatalogRoute
   '/chat': typeof ChatRouteWithChildren
+  '/flotte': typeof FlotteRoute
   '/status': typeof StatusRoute
   '/transparency': typeof TransparencyRoute
   '/models/': typeof ModelsIndexRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByTo {
   '/bench': typeof BenchRoute
   '/catalog': typeof CatalogRoute
   '/chat': typeof ChatRouteWithChildren
+  '/flotte': typeof FlotteRoute
   '/status': typeof StatusRoute
   '/transparency': typeof TransparencyRoute
   '/models': typeof ModelsIndexRoute
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   '/bench': typeof BenchRoute
   '/catalog': typeof CatalogRoute
   '/chat': typeof ChatRouteWithChildren
+  '/flotte': typeof FlotteRoute
   '/status': typeof StatusRoute
   '/transparency': typeof TransparencyRoute
   '/models/': typeof ModelsIndexRoute
@@ -120,6 +129,7 @@ export interface FileRouteTypes {
     | '/bench'
     | '/catalog'
     | '/chat'
+    | '/flotte'
     | '/status'
     | '/transparency'
     | '/models/'
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/bench'
     | '/catalog'
     | '/chat'
+    | '/flotte'
     | '/status'
     | '/transparency'
     | '/models'
@@ -144,6 +155,7 @@ export interface FileRouteTypes {
     | '/bench'
     | '/catalog'
     | '/chat'
+    | '/flotte'
     | '/status'
     | '/transparency'
     | '/models/'
@@ -157,6 +169,7 @@ export interface RootRouteChildren {
   BenchRoute: typeof BenchRoute
   CatalogRoute: typeof CatalogRoute
   ChatRoute: typeof ChatRouteWithChildren
+  FlotteRoute: typeof FlotteRoute
   StatusRoute: typeof StatusRoute
   TransparencyRoute: typeof TransparencyRoute
   ModelsIndexRoute: typeof ModelsIndexRoute
@@ -177,6 +190,13 @@ declare module '@tanstack/react-router' {
       path: '/status'
       fullPath: '/status'
       preLoaderRoute: typeof StatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/flotte': {
+      id: '/flotte'
+      path: '/flotte'
+      fullPath: '/flotte'
+      preLoaderRoute: typeof FlotteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/chat': {
@@ -254,6 +274,7 @@ const rootRouteChildren: RootRouteChildren = {
   BenchRoute: BenchRoute,
   CatalogRoute: CatalogRoute,
   ChatRoute: ChatRouteWithChildren,
+  FlotteRoute: FlotteRoute,
   StatusRoute: StatusRoute,
   TransparencyRoute: TransparencyRoute,
   ModelsIndexRoute: ModelsIndexRoute,

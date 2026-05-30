@@ -19,6 +19,9 @@ export function Footer() {
             <h5>Produit</h5>
             <ul>
               <li>
+                <Link to="/flotte">Flotte LLM souveraine</Link>
+              </li>
+              <li>
                 <Link to="/models">Modèles (playground + statut)</Link>
               </li>
               <li>

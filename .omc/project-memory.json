@@ -1,0 +1,168 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1780178886568,
+  "projectRoot": "/home/monsieurb/Documents/devel/ailiance-demo",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": ">=20",
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "Python",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "pyproject.toml"
+        ]
+      }
+    ],
+    "frameworks": [],
+    "packageManager": "pnpm",
+    "runtime": "Node.js 20"
+  },
+  "build": {
+    "buildCommand": "pnpm build",
+    "testCommand": "pnpm test",
+    "lintCommand": "pnpm lint",
+    "devCommand": "pnpm dev",
+    "scripts": {
+      "dev": "pnpm -r --parallel dev",
+      "prebuild": "pnpm gen:api-types",
+      "build": "pnpm -r build",
+      "test": "pnpm -r test",
+      "typecheck": "pnpm -r typecheck",
+      "lint": "biome check .",
+      "format": "biome format --write .",
+      "gen:api-types": "bash scripts/gen-api-types.sh"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": true,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs",
+      "scripts"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "apps": {
+      "path": "apps",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1780178886556,
+      "keyFiles": []
+    },
+    "deploy": {
+      "path": "deploy",
+      "purpose": null,
+      "fileCount": 3,
+      "lastAccessed": 1780178886557,
+      "keyFiles": [
+        "README.md",
+        "docker-compose.yml"
+      ]
+    },
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 0,
+      "lastAccessed": 1780178886563,
+      "keyFiles": []
+    },
+    "packages": {
+      "path": "packages",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1780178886565,
+      "keyFiles": []
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 2,
+      "lastAccessed": 1780178886565,
+      "keyFiles": [
+        "fetch_hf_catalog.py",
+        "gen-api-types.sh"
+      ]
+    },
+    "apps/api": {
+      "path": "apps/api",
+      "purpose": "API routes",
+      "fileCount": 3,
+      "lastAccessed": 1780178886566,
+      "keyFiles": [
+        "benchmarks.yaml",
+        "entrypoint.sh",
+        "pyproject.toml"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "docs/ailiance-methodologie.pdf",
+      "accessCount": 1,
+      "lastAccessed": 1780182537754,
+      "type": "file"
+    },
+    {
+      "path": "apps/cockpit-public/src/routes/index.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1780182560779,
+      "type": "file"
+    },
+    {
+      "path": "apps/cockpit-public/src/routes/about.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1780182561648,
+      "type": "file"
+    },
+    {
+      "path": "apps/cockpit-public/src/routes/about.lazy.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1780182562283,
+      "type": "file"
+    },
+    {
+      "path": "apps/cockpit-public/src/routes/__root.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1780182562700,
+      "type": "file"
+    },
+    {
+      "path": "apps/cockpit-public/src/components/layout/Header.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1780182570394,
+      "type": "file"
+    },
+    {
+      "path": "apps/cockpit-public/src/components/layout/Footer.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1780182570870,
+      "type": "file"
+    },
+    {
+      "path": "apps/cockpit-public/src/styles.css",
+      "accessCount": 1,
+      "lastAccessed": 1780182571684,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

@@ -2,7 +2,7 @@ import { Link } from '@tanstack/react-router';
 import { useState } from 'react';
 
 const NAV_ITEMS: [string, string][] = [
-  ['/', 'Accueil'],
+  ['/flotte', 'Flotte'],
   ['/chat', 'Playground'],
   ['/models', 'Modèles'],
   ['/transparency', 'Démarche Qualité IA Act'],

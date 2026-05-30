@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"pkill -9 -f vite 2>/dev/null; sleep 2\\ncd /home/monsieurb/Documents/devel/ailiance-demo/apps/cockpit-public\\npnpm dev > /tmp/cockpit-dev.log 2>&1 &\\nDEV_PID=$!\\nPORT=\\\"\\\"\\nfor i in $(seq 1...",
+  "error": "Exit code 1",
+  "timestamp": "2026-05-30T23:36:56.715Z",
+  "retry_count": 1
+}

@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"ps aux | grep '[c]ockpit-public' | awk '{print $2, $11, $12, $13}'\\necho \\\"--- killing all cockpit-public procs by PID ---\\\"\\nfor p in $(ps aux | grep '[c]ockpit-public' | awk '{print $2}'...",
+  "error": "Exit code 1\n63777 /bin/bash -c source\n--- killing all cockpit-public procs by PID ---",
+  "timestamp": "2026-05-30T23:37:29.948Z",
+  "retry_count": 1
+}
