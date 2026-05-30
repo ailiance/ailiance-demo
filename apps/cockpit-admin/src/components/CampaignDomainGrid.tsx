@@ -29,10 +29,7 @@ export function CampaignDomainGrid({ verdicts, currentDomain }: Props) {
   // (insertion order is preserved by JSON parsing) and tag the in-flight
   // domain separately if it isn't yet in `verdicts`.
   const entries = Object.entries(verdicts ?? {});
-  if (
-    currentDomain &&
-    !entries.some(([d]) => d === currentDomain)
-  ) {
+  if (currentDomain && !entries.some(([d]) => d === currentDomain)) {
     entries.push([currentDomain, '']);
   }
 
@@ -61,16 +58,12 @@ export function CampaignDomainGrid({ verdicts, currentDomain }: Props) {
             return (
               <tr
                 key={domain}
-                className={`border-b border-slate-100 ${
-                  isCurrent ? 'bg-violet-50' : ''
-                }`}
+                className={`border-b border-slate-100 ${isCurrent ? 'bg-violet-50' : ''}`}
               >
                 <td className="py-1 pr-2 font-mono text-slate-400">{idx + 1}</td>
                 <td className="py-1 pr-2 font-mono">
                   {domain}
-                  {isCurrent && (
-                    <span className="ml-2 text-xs text-violet-600">(active)</span>
-                  )}
+                  {isCurrent && <span className="ml-2 text-xs text-violet-600">(active)</span>}
                 </td>
                 <td className="py-1">
                   {verdict ? (

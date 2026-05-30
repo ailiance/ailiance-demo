@@ -19,6 +19,8 @@ interface Props {
 // only a Playground UX default. Power users can override via ParamsPanel.
 const REASONING_ALIASES = new Set([
   'ailiance-reasoning-r1',
+  'ailiance-gemma2',
+  'ailiance-ministral-reasoning',
   'ailiance-qwen-235b',
   'ailiance-qwen36',
 ]);
