@@ -13,8 +13,7 @@ interface StartResponse {
 export function useStartCampaign() {
   const qc = useQueryClient();
   return useMutation<StartResponse, Error, StartBody>({
-    mutationFn: (body) =>
-      api.post<StartResponse>('/api/admin/training/campaign/start', body),
+    mutationFn: (body) => api.post<StartResponse>('/api/admin/training/campaign/start', body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['campaign-status'] });
     },

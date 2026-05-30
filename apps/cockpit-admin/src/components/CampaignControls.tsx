@@ -110,15 +110,19 @@ export function CampaignControls({ status }: Props) {
       )}
 
       {startOpen && (
+        // biome-ignore lint/a11y/useSemanticElements: backdrop overlay closes the modal on outside click; a native <dialog> can't carry the click-to-dismiss backdrop without changing behavior.
         <div
           role="dialog"
           aria-modal="true"
+          tabIndex={-1}
           className="fixed inset-0 z-40 flex items-center justify-center bg-black/50"
           onClick={() => setStartOpen(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setStartOpen(false)}
         >
           <div
             className="max-h-[80vh] w-full max-w-2xl overflow-y-auto rounded bg-white p-6 shadow-lg"
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-bold mb-2">Start medium35 campaign</h3>
             <p className="text-sm text-slate-600 mb-4">
@@ -162,15 +166,19 @@ export function CampaignControls({ status }: Props) {
       )}
 
       {abortOpen && (
+        // biome-ignore lint/a11y/useSemanticElements: backdrop overlay closes the modal on outside click; a native <dialog> can't carry the click-to-dismiss backdrop without changing behavior.
         <div
           role="dialog"
           aria-modal="true"
+          tabIndex={-1}
           className="fixed inset-0 z-40 flex items-center justify-center bg-black/50"
           onClick={() => setAbortOpen(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setAbortOpen(false)}
         >
           <div
             className="w-full max-w-md rounded bg-white p-6 shadow-lg"
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
           >
             <h3 className="text-lg font-bold mb-2">Abandonner la campagne ?</h3>
             <p className="text-sm text-slate-600">
@@ -220,11 +228,7 @@ function DomainCheckboxGroup({
             key={d}
             className="flex items-center gap-2 text-sm cursor-pointer hover:bg-slate-50 px-1 py-0.5 rounded"
           >
-            <input
-              type="checkbox"
-              checked={selected.has(d)}
-              onChange={() => toggle(d)}
-            />
+            <input type="checkbox" checked={selected.has(d)} onChange={() => toggle(d)} />
             <span className="font-mono text-xs">{d}</span>
           </label>
         ))}

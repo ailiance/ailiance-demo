@@ -2,9 +2,9 @@ import { CampaignControls } from '@/components/CampaignControls';
 import { CampaignDomainGrid } from '@/components/CampaignDomainGrid';
 import { CampaignStatusCard } from '@/components/CampaignStatusCard';
 import { LogTail } from '@/components/LogTail';
-import type { LogEvent } from '@/hooks/useTrainingLogs';
 import { useCampaignLog } from '@/hooks/useCampaignLog';
 import { useCampaignStatus } from '@/hooks/useCampaignStatus';
+import type { LogEvent } from '@/hooks/useTrainingLogs';
 import { createFileRoute } from '@tanstack/react-router';
 import { useMemo } from 'react';
 
@@ -60,24 +60,16 @@ function CampaignPage() {
         </p>
       )}
 
-      <CampaignDomainGrid
-        verdicts={status.verdicts}
-        currentDomain={currentDomain}
-      />
+      <CampaignDomainGrid verdicts={status.verdicts} currentDomain={currentDomain} />
 
       {currentDomain && (
         <section className="space-y-2">
           <h3 className="font-bold">
-            Log tail —{' '}
-            <span className="font-mono text-sm">{currentDomain}</span>
-            {logQ.isFetching && (
-              <span className="ml-2 text-xs text-slate-400">refreshing…</span>
-            )}
+            Log tail — <span className="font-mono text-sm">{currentDomain}</span>
+            {logQ.isFetching && <span className="ml-2 text-xs text-slate-400">refreshing…</span>}
           </h3>
           {logQ.error ? (
-            <p className="text-sm text-rose-600">
-              Failed to load log: {logQ.error.message}
-            </p>
+            <p className="text-sm text-rose-600">Failed to load log: {logQ.error.message}</p>
           ) : (
             <LogTail events={logEvents} />
           )}

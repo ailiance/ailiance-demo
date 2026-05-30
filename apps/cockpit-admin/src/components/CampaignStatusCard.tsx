@@ -15,7 +15,6 @@ function statusVisuals(s: string): { Icon: typeof Activity; color: string } {
       return { Icon: XCircle, color: 'text-rose-600' };
     case 'ABORTED':
       return { Icon: AlertCircle, color: 'text-amber-600' };
-    case 'IDLE':
     default:
       return { Icon: Pause, color: 'text-slate-400' };
   }
@@ -25,10 +24,7 @@ function ProgressBar({ value, max }: { value: number; max: number }) {
   const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
     <div className="h-2 rounded bg-slate-200 overflow-hidden" aria-label={`${pct}%`}>
-      <div
-        className="h-full bg-violet-500 transition-all"
-        style={{ width: `${pct}%` }}
-      />
+      <div className="h-full bg-violet-500 transition-all" style={{ width: `${pct}%` }} />
     </div>
   );
 }
@@ -45,9 +41,7 @@ export function CampaignStatusCard({ status }: Props) {
   return (
     <section className="rounded border border-slate-200 bg-white p-4">
       <header className="flex items-center justify-between">
-        <h3 className="font-bold">
-          {status.campaign ?? 'medium35 campaign'}
-        </h3>
+        <h3 className="font-bold">{status.campaign ?? 'medium35 campaign'}</h3>
         <span className={`inline-flex items-center gap-1 text-xs ${color}`}>
           <Icon size={14} /> {status.status}
         </span>
@@ -97,18 +91,14 @@ export function CampaignStatusCard({ status }: Props) {
         </div>
       )}
 
-      {status.error && (
-        <p className="mt-3 text-xs text-rose-600">Error: {status.error}</p>
-      )}
+      {status.error && <p className="mt-3 text-xs text-rose-600">Error: {status.error}</p>}
       {status.reload_failed && (
         <p className="mt-2 text-xs text-amber-600">
           Reload failed — workers may need manual recovery.
         </p>
       )}
       {status.abort_requested && status.status === 'TRAINING' && (
-        <p className="mt-2 text-xs text-amber-600">
-          Abort requested — current domain finishing.
-        </p>
+        <p className="mt-2 text-xs text-amber-600">Abort requested — current domain finishing.</p>
       )}
     </section>
   );
