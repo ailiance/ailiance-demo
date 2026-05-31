@@ -8,11 +8,11 @@ RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /repo
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml biome.json ./
 COPY packages ./packages
-COPY appshttps://github.com/ailiance/ailiance-demo.git/cockpit-public/package.json ./apps/cockpit-public/
+COPY apps/cockpit-public/package.json ./apps/cockpit-public/
 COPY apps/cockpit-admin/package.json ./apps/cockpit-admin/
 RUN pnpm install --frozen-lockfile
 
-# --- Generate packages/shared/src/api/thttps://github.com/ailiance/ailiance-demo.gitypes.ts from FastAPI OpenAPI ---------
+# --- Generate packages/shared/src/api/types.ts from FastAPI OpenAPI ---------
 # scripts/gen-api-types.sh boots the API briefly and runs openapi-typescript.
 # Both Python and Node are needed in this stage.
 FROM node-base AS gen-types
